@@ -1,34 +1,47 @@
 package rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.activities
 
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
-import io.reactivex.Single
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.R
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.UserEntity
-import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.databinding.ActivityLoginBinding
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.databinding.ActivityMainBinding
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.contract.MainContract
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.fragments.LoginFragment
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.viewmodels.LoginViewModel
 
-class LoginActivity : AppCompatActivity() {
-    private lateinit var binding : ActivityLoginBinding
+class MainActivity : AppCompatActivity() {
+    private lateinit var binding : ActivityMainBinding
     private val loginViewModel: MainContract.ViewModel by viewModel<LoginViewModel>()
-
+    private val sharedPreferences: SharedPreferences by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLoginBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+        if (sharedPreferences.getString("loggedIn", "").equals("")){
+            val login = LoginFragment()
+            supportFragmentManager.beginTransaction()
+                .add(binding.fragmentContainer.id, login)
+                .commit()
+        }
+
         setContentView(binding.root)
 
         init()
     }
 
+    /**
+     * Initializes all the necessary components
+     */
     private fun init(){
         initDB()
-        initUi()
     }
 
+    /**
+     * Inserts predefined users into the database
+     */
     private fun initDB(){
 
         val list = mutableListOf(
@@ -42,16 +55,5 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel.insertUsers(list)
     }
 
-    private fun initUi(){
-        binding.button.setOnClickListener {
-            loginViewModel.getByUsername(binding.loginUsername.text.toString())
-                .subscribe({
-                    userEntity ->
-                        if (userEntity == null) {
-                            Toast.makeText(this, R.string.bad_credentials, Toast.LENGTH_LONG).show()
-                        }
-                    },
-                    {error -> Toast.makeText(this,  R.string.error, Toast.LENGTH_LONG).show()})
-        }
-    }
+
 }

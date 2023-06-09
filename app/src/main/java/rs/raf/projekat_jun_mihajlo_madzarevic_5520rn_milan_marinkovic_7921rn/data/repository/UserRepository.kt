@@ -7,5 +7,5 @@ interface UserRepository {
 
     fun insertUsers(users : List<UserEntity>): Single<List<Long>>
 
-    fun getByUsername(username: String): Single<UserEntity?>
+    fun getByUsernameAndPassword(username: String, password: String): Single<UserEntity?>
 }

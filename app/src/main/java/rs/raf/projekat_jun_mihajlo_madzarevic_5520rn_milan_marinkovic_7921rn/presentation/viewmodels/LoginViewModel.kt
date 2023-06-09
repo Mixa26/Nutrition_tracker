@@ -32,9 +32,9 @@ class LoginViewModel (
         subscriptions.add(subscription)
     }
 
-    override fun getByUsername(username: String) : Single<UserEntity?> {
+    override fun getByUsernameAndPassword(username: String, password: String) : Single<UserEntity?> {
         return userRepository
-            .getByUsername(username)
+            .getByUsernameAndPassword(username, password)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError { Timber.e(it) }

@@ -13,6 +13,6 @@ abstract class UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insertUsers(users : List<UserEntity>): Single<List<Long>>
 
-    @Query("SELECT * FROM users WHERE username == :username")
-    abstract fun getByUsername(username: String): Single<UserEntity?>
+    @Query("SELECT * FROM users WHERE username == :username and password == :password")
+    abstract fun getByUsernameAndPassword(username: String, password: String): Single<UserEntity?>
 }

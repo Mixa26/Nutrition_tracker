@@ -6,7 +6,6 @@ import android.os.Handler
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.R
-import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.databinding.ActivitySplashBinding
 
 class SplashScreenActivity : AppCompatActivity() {
     //private lateinit var binding: ActivitySplashBinding
@@ -19,7 +18,7 @@ class SplashScreenActivity : AppCompatActivity() {
 
         // Start the login activity after a delay
         Handler().postDelayed({
-            startActivity(Intent(this, LoginActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
         }, 2000)
     }

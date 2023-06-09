@@ -10,7 +10,7 @@ class UserRepositoryImpl(private val userDao: UserDao) : UserRepository{
         return userDao.insertUsers(users)
     }
 
-    override fun getByUsername(username: String): Single<UserEntity?> {
-        return userDao.getByUsername(username)
+    override fun getByUsernameAndPassword(username: String, password: String): Single<UserEntity?> {
+        return userDao.getByUsernameAndPassword(username, password)
     }
 }
