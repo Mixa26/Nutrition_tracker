@@ -5,10 +5,12 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidFileProperties
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.fragment.koin.fragmentFactory
-import timber.log.Timber
 import org.koin.core.context.startKoin
+import timber.log.Timber
+
 import org.koin.core.logger.Level
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.modules.coreModule
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.modules.userModule
 
 class NutritionTrackerApplication : Application() {
 
@@ -28,13 +30,15 @@ class NutritionTrackerApplication : Application() {
 
     private fun initKoin(){
         val modules = listOf(
-            coreModule
+            coreModule,
+            userModule
         )
         startKoin{
             androidLogger(Level.ERROR)
             androidContext(this@NutritionTrackerApplication)
             androidFileProperties()
             fragmentFactory()
+            modules(modules)
         }
     }
 }
