@@ -12,7 +12,7 @@ import timber.log.Timber
 
 class LoginViewModel (
     private val userRepository: UserRepository
-) : ViewModel() , MainContract.ViewModel {
+) : ViewModel() , MainContract.UserViewModel {
 
     private val subscriptions = CompositeDisposable()
 

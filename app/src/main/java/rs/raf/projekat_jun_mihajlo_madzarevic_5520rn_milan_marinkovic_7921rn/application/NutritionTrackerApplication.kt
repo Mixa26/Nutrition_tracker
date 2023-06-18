@@ -9,6 +9,7 @@ import org.koin.core.context.startKoin
 import timber.log.Timber
 
 import org.koin.core.logger.Level
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.modules.categoryModule
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.modules.coreModule
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.modules.userModule
 
@@ -30,6 +31,7 @@ class NutritionTrackerApplication : Application() {
 
     private fun initKoin(){
         val modules = listOf(
+            categoryModule,
             coreModule,
             userModule
         )

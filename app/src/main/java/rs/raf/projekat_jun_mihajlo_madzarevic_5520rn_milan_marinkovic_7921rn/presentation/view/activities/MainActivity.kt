@@ -6,14 +6,16 @@ import android.os.Bundle
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.UserEntity
-import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.databinding.ActivityMainBinding
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.contract.MainContract
-import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.fragments.LoginFragment
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.databinding.ActivityMainBinding
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.fragments.HomeFragment
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.fragments.LoginFragment
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.viewmodels.CategoryViewModel
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.viewmodels.LoginViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
-    private val loginViewModel: MainContract.ViewModel by viewModel<LoginViewModel>()
+    private val loginViewModel: MainContract.UserViewModel by viewModel<LoginViewModel>()
     private val sharedPreferences: SharedPreferences by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,9 +23,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         if (sharedPreferences.getString("loggedIn", "").equals("")){
-            val login = LoginFragment()
             supportFragmentManager.beginTransaction()
-                .add(binding.fragmentContainer.id, login)
+                .add(binding.fragmentContainer.id, LoginFragment())
+                .commit()
+        }
+        else{
+            supportFragmentManager.beginTransaction()
+                .add(binding.fragmentContainer.id, HomeFragment())
                 .commit()
         }
 

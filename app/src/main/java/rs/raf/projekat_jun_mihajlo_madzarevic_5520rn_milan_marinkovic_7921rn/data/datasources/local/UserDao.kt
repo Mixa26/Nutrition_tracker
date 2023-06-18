@@ -1,4 +1,4 @@
-package rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.datasources
+package rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.datasources.local
 
 import androidx.room.Dao
 import androidx.room.Insert
