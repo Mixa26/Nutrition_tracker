@@ -24,7 +24,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/obligationTimeIcon"
+        android:id="@+id/categoryDescriptionImage"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_margin="20dp"
