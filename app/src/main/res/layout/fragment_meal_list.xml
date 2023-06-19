@@ -28,6 +28,7 @@
         android:id="@+id/mealsRV"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="80dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchMealList"
@@ -35,6 +36,26 @@
         android:paddingTop="16dp"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp" />
+
+    <ImageView
+        android:id="@+id/mealBackwardPagination"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="100dp"
+        android:src="@drawable/backward_pagination"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mealsRV" />
+
+    <ImageView
+        android:id="@+id/mealForwardPagination"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="100dp"
+        android:src="@drawable/forward_pagination"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mealsRV" />
 
     <ProgressBar
         android:id="@+id/loadingMeals"

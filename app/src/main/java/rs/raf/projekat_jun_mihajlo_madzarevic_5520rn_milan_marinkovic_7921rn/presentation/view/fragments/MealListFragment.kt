@@ -34,6 +34,9 @@ class MealListFragment(private val category: String) : Fragment() {
 
     private lateinit var allMeals: List<MealEntity>
 
+    private var mealsPerPage = 10
+    private var currentPage = 0
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentMealListBinding.inflate(layoutInflater)
         recyclerView = binding.mealsRV
@@ -63,7 +66,7 @@ class MealListFragment(private val category: String) : Fragment() {
         binding.searchMealList.doAfterTextChanged {
             val filter = it.toString()
             if (filter.isEmpty()){
-                mealAdapter.submitList(allMeals)
+                mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
             }
             else{
                 //TODO ovo ispraviti
@@ -81,8 +84,30 @@ class MealListFragment(private val category: String) : Fragment() {
         mealViewModel.getAll()
         mealViewModel.fetchAllByCategory(category)
 
+        //Back button returns us to categories list
         binding.mealListBackButton.setOnClickListener{
             (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, HomeFragment()).commit()
+        }
+
+        //Load previous 10 meals
+        binding.mealBackwardPagination.setOnClickListener{
+            if ((currentPage-1) >= 0){
+                currentPage -= 1
+                mealAdapter.submitList(allMeals.subList(currentPage * mealsPerPage, (currentPage+1) * mealsPerPage))
+            }
+        }
+
+        //Load next 10 meals
+        binding.mealForwardPagination.setOnClickListener{
+            if ((currentPage+1) * mealsPerPage <= allMeals.size){
+                currentPage += 1
+                if ((currentPage+1) * mealsPerPage <= allMeals.size){
+                    mealAdapter.submitList(allMeals.subList(currentPage * mealsPerPage, (currentPage+1) * mealsPerPage))
+                }
+                else {
+                    mealAdapter.submitList(allMeals.subList(currentPage * mealsPerPage, allMeals.size))
+                }
+            }
         }
     }
 
@@ -91,7 +116,7 @@ class MealListFragment(private val category: String) : Fragment() {
             is MealState.Success -> {
                 showLoadingState(false)
                 allMeals = state.meals
-                mealAdapter.submitList(state.meals)
+                mealAdapter.submitList(state.meals.subList(0,mealsPerPage))
             }
             is MealState.Error -> {
                 showLoadingState(false)
