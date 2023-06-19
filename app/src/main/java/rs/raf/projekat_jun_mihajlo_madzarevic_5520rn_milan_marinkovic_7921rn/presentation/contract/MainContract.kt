@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import io.reactivex.Single
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.UserEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.CategoryState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.MealState
 
 interface MainContract {
     interface UserViewModel {
@@ -16,6 +17,19 @@ interface MainContract {
         val categoryState: LiveData<CategoryState>
 
         fun fetchAll()
+        fun getAll()
+    }
+
+    interface MealViewModel {
+
+        val mealState: LiveData<MealState>
+
+        fun fetchAllByName(name: String)
+
+        fun fetchAllByCategory(category: String)
+
+        fun getAllByName(name: String)
+
         fun getAll()
     }
 }

@@ -14,7 +14,7 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.pre
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.viewmodels.LoginViewModel
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding : ActivityMainBinding
+    lateinit var binding : ActivityMainBinding
     private val loginViewModel: MainContract.UserViewModel by viewModel<LoginViewModel>()
     private val sharedPreferences: SharedPreferences by inject()
 

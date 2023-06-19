@@ -11,6 +11,7 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.dat
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.contract.MainContract
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.CategoryState
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class CategoryViewModel(
     private val categoryRepository: CategoryRepository
@@ -18,8 +19,6 @@ class CategoryViewModel(
 
     private val subscriptions = CompositeDisposable()
     override val categoryState: MutableLiveData<CategoryState> = MutableLiveData()
-
-    private val publishSubject: PublishSubject<String> = PublishSubject.create()
 
     override fun fetchAll() {
         val subscription = categoryRepository
