@@ -12,6 +12,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.R
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.contract.MainContract
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.databinding.FragmentLoginBinding
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.activities.MainActivity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.viewmodels.LoginViewModel
 
 //Fragment with login
@@ -45,6 +46,7 @@ class LoginFragment : Fragment() {
                         else{
                             sharedPreferences.edit().putString("loggedIn", binding.loginUsername.text.toString()).apply()
                             activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
+                            activity?.supportFragmentManager?.beginTransaction()?.add((activity as MainActivity).binding.fragmentContainer.id, HomeFragment())?.commit()
                         }
                     },
                     { error ->
