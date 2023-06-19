@@ -28,7 +28,7 @@ class CategoryAdapter(diffCallback: DiffUtil.ItemCallback<CategoryEntity>) : Lis
         holder.bind(getItem(position))
 
         holder.itemView.setOnClickListener{
-            (holder.itemView.context as MainActivity).supportFragmentManager.beginTransaction().add((holder.itemView.context as MainActivity).binding.fragmentContainer.id , MealListFragment(holder.itemView.findViewById<TextView>(R.id.categoryTitle).text.toString())).commit()
+            (holder.itemView.context as MainActivity).supportFragmentManager.beginTransaction().replace((holder.itemView.context as MainActivity).binding.fragmentContainer.id , MealListFragment(holder.itemView.findViewById<TextView>(R.id.categoryTitle).text.toString())).commit()
         }
     }
 

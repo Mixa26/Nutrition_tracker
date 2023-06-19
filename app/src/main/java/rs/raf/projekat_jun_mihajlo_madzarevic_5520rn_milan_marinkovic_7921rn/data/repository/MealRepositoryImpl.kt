@@ -15,7 +15,7 @@ class MealRepositoryImpl (
         return remoteDataSource
             .getAllByName(name)
             .doOnNext{
-                val entities = it.map{
+                val entities = it.meals.map{
                     MealEntity(
                         it.idMeal.toInt(),
                         it.strCategory,
@@ -34,7 +34,7 @@ class MealRepositoryImpl (
         return remoteDataSource
             .getAllByCategory(category)
             .doOnNext{
-                val entities = it.map{
+                val entities = it.meals.map{
                     MealEntity(
                         it.idMeal.toInt(),
                         it.strMeal,
