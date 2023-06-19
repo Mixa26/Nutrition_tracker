@@ -74,15 +74,6 @@ class MealListFragment(private val category: String) : Fragment() {
                 mealViewModel.getAllByName(filter)
             }
         }
-    }
-
-    private fun initObservers() {
-        mealViewModel.mealState.observe(viewLifecycleOwner, Observer {
-            Timber.e(it.toString())
-            renderState(it)
-        })
-        mealViewModel.getAll()
-        mealViewModel.fetchAllByCategory(category)
 
         //Back button returns us to categories list
         binding.mealListBackButton.setOnClickListener{
@@ -109,6 +100,15 @@ class MealListFragment(private val category: String) : Fragment() {
                 }
             }
         }
+    }
+
+    private fun initObservers() {
+        mealViewModel.mealState.observe(viewLifecycleOwner, Observer {
+            Timber.e(it.toString())
+            renderState(it)
+        })
+        mealViewModel.getAll()
+        mealViewModel.fetchAllByCategory(category)
     }
 
     private fun renderState(state: MealState) {

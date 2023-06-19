@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.MealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.R
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.activities.MainActivity
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.fragments.DetailedMealFragment
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.fragments.MealListFragment
 
 class MealAdapter(diffCallback: DiffUtil.ItemCallback<MealEntity>) : ListAdapter<MealEntity, MealAdapter.MealViewHolder>(diffCallback) {
 
@@ -22,7 +25,7 @@ class MealAdapter(diffCallback: DiffUtil.ItemCallback<MealEntity>) : ListAdapter
         holder.bind(getItem(position))
 
         holder.itemView.setOnClickListener{
-            //OTVORI DETALJAN PROZOR ZA MEAL
+            (holder.itemView.context as MainActivity).supportFragmentManager.beginTransaction().replace((holder.itemView.context as MainActivity).binding.fragmentContainer.id , DetailedMealFragment(getItem(position))).commit()
         }
     }
 
