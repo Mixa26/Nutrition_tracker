@@ -24,12 +24,11 @@ class MealViewModel (
 
     init {
         val subscription = publishSubject
-            .debounce(2000, TimeUnit.MILLISECONDS)
+            .debounce(200, TimeUnit.MILLISECONDS)
             .distinctUntilChanged()
             .switchMap {
-
                 mealRepository
-                    .getAllByName(it)
+                    .fetchAllByName(it)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError {
@@ -39,7 +38,11 @@ class MealViewModel (
             }
             .subscribe(
                 {
-                    mealState.value = MealState.Success(it)
+                    when(it) {
+                        is Resource.Loading -> mealState.value = MealState.Loading
+                        is Resource.Success -> mealState.value = MealState.DataFetched
+                        is Resource.Error -> mealState.value = MealState.Error("Error happened while fetching data from the server")
+                    }
                 },
                 {
                     mealState.value = MealState.Error("Error happened while fetching data from db")

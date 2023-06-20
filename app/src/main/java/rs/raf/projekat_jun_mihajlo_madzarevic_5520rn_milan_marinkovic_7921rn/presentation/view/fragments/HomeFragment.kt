@@ -69,9 +69,8 @@ class HomeFragment : Fragment() {
                 categoryAdapter.submitList(allCategories)
             }
             else{
-                //TODO ovo ispraviti
+                mealViewModel.getAll()
                 mealViewModel.getAllByName(filter)
-                mealViewModel.fetchAllByName(filter)
             }
         }
     }
@@ -113,7 +112,7 @@ class HomeFragment : Fragment() {
     private fun renderSearchState(state: MealState) {
         when (state) {
             is MealState.Success -> {
-                showLoadingState(false)
+                showLoadingStateMeals(false)
 
                 val categoriesWithMeal: List<String> = allMealCategories(state.meals)
                 val listToSubmit: MutableList<CategoryEntity> = mutableListOf()
@@ -127,15 +126,15 @@ class HomeFragment : Fragment() {
                 categoryAdapter.submitList(listToSubmit)
             }
             is MealState.Error -> {
-                showLoadingState(false)
+                showLoadingStateMeals(false)
                 Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
             }
             is MealState.DataFetched -> {
-                showLoadingState(false)
+                showLoadingStateMeals(false)
                 Toast.makeText(context, "Fresh data fetched from the server", Toast.LENGTH_LONG).show()
             }
             is MealState.Loading -> {
-                showLoadingState(true)
+                showLoadingStateMeals(true)
             }
         }
     }
@@ -152,6 +151,11 @@ class HomeFragment : Fragment() {
 
     private fun showLoadingState(loading: Boolean) {
         binding.searchCategoryList.isVisible = !loading
+        binding.categoriesRV.isVisible = !loading
+        binding.loadingCategories.isVisible = loading
+    }
+
+    private fun showLoadingStateMeals(loading: Boolean) {
         binding.categoriesRV.isVisible = !loading
         binding.loadingCategories.isVisible = loading
     }

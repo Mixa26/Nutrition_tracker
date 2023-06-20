@@ -16,4 +16,5 @@
     <string name="detailedMealTags">Tags:</string>
     <string name="detailedMealVideo">Video:</string>
     <string name="detailedMealIngredients">Ingredients:</string>
+    <string name="searchByMeals">Search by meals</string>
 </resources>

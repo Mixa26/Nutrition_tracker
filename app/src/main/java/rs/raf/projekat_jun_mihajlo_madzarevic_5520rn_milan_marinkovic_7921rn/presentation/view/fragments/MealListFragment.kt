@@ -69,8 +69,7 @@ class MealListFragment(private val category: String) : Fragment() {
                 mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
             }
             else{
-                //TODO ovo ispraviti
-                mealViewModel.fetchAllByName(filter)
+                mealViewModel.getAll()
                 mealViewModel.getAllByName(filter)
             }
         }
@@ -90,9 +89,9 @@ class MealListFragment(private val category: String) : Fragment() {
 
         //Load next 10 meals
         binding.mealForwardPagination.setOnClickListener{
-            if ((currentPage+1) * mealsPerPage <= allMeals.size){
+            if ((currentPage+1) * mealsPerPage < allMeals.size){
                 currentPage += 1
-                if ((currentPage+1) * mealsPerPage <= allMeals.size){
+                if ((currentPage+1) * mealsPerPage < allMeals.size){
                     mealAdapter.submitList(allMeals.subList(currentPage * mealsPerPage, (currentPage+1) * mealsPerPage))
                 }
                 else {

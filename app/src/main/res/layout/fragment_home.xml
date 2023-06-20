@@ -9,6 +9,7 @@
         android:id="@+id/searchCategoryList"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:hint="@string/searchByMeals"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
