@@ -31,6 +31,8 @@ val coreModule = module {
 
     single { createRetrofit(moshi = get(), httpClient = get()) }
 
+    //single { createNinjaRetrofit(httpClient = get())}
+
     single { createMoshi() }
 
     single { createOkHttpClient() }
@@ -39,7 +41,7 @@ val coreModule = module {
 
 fun createMoshi(): Moshi {
     return Moshi.Builder()
-//        .add(Date::class.java, Rfc3339DateJsonAdapter())
+        .add(Date::class.java, Rfc3339DateJsonAdapter())
         .build()
 }
 
@@ -50,6 +52,16 @@ fun createRetrofit(moshi: Moshi,
         .baseUrl("https://www.themealdb.com/api/json/v1/1/")
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
 //        .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
+        .addConverterFactory(GsonConverterFactory.create())
+        .client(httpClient)
+        .build()
+}
+
+fun createNinjaRetrofit(httpClient: OkHttpClient
+): Retrofit {
+    return Retrofit.Builder()
+        .baseUrl("https://api.api-ninjas.com/v1/")
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
         .client(httpClient)
         .build()
