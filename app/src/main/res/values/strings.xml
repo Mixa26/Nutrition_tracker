@@ -8,4 +8,12 @@
     <string name="categories">Categories</string>
     <string name="mealsInCategory">Meals in</string>
     <string name="data_fetched">Fresh data fetched from the server</string>
+    <string name="save_meal">Save meal</string>
+    <string name="data_not_available">Data not available</string>
+    <string name="detailedMealCategory">Category: </string>
+    <string name="detailedMealArea">Area: </string>
+    <string name="detailedMealInstructions">How to prepare?</string>
+    <string name="detailedMealTags">Tags:</string>
+    <string name="detailedMealVideo">Video:</string>
+    <string name="detailedMealIngredients">Ingredients:</string>
 </resources>

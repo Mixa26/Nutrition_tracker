@@ -116,7 +116,12 @@ class MealListFragment(private val category: String) : Fragment() {
             is MealState.Success -> {
                 showLoadingState(false)
                 allMeals = state.meals
-                mealAdapter.submitList(state.meals.subList(0,mealsPerPage))
+                if (mealsPerPage <= state.meals.size) {
+                    mealAdapter.submitList(state.meals.subList(0, mealsPerPage))
+                }
+                else {
+                    mealAdapter.submitList(state.meals)
+                }
             }
             is MealState.Error -> {
                 showLoadingState(false)

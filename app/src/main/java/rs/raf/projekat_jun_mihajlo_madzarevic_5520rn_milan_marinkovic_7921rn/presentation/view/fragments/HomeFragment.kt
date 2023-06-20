@@ -70,8 +70,8 @@ class HomeFragment : Fragment() {
             }
             else{
                 //TODO ovo ispraviti
-                mealViewModel.fetchAllByName(filter)
                 mealViewModel.getAllByName(filter)
+                mealViewModel.fetchAllByName(filter)
             }
         }
     }

@@ -13,7 +13,7 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.dat
     entities = [UserEntity::class,
                CategoryEntity::class,
                MealEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = false)
 abstract class NutritionDatabase : RoomDatabase() {
     abstract fun getUserDao(): UserDao

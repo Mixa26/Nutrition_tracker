@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "categories")
 data class CategoryEntity (
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = false)
     var idCategory: Int,
     var strCategory: String,
     var strCategoryThumb: String,
