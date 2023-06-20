@@ -13,4 +13,6 @@ interface MealRepository {
     fun fetchAllByCategory(category: String): Observable<Resource<Unit>>
 
     fun getAll(): Observable<List<MealEntity>>
+
+
 }
