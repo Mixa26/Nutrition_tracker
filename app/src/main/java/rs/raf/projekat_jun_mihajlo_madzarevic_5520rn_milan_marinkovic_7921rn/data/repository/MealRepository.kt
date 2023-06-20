@@ -2,6 +2,7 @@ package rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.da
 
 import io.reactivex.Observable
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.MealEntity
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.NinjaMealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.Resource
 
 interface MealRepository {
@@ -14,5 +15,7 @@ interface MealRepository {
 
     fun getAll(): Observable<List<MealEntity>>
 
-
+//    fun ninjaFetchAllByTitle(title: String): Observable<Resource<Unit>>
+//
+//    fun ninjaGetAll(): Observable<List<NinjaMealEntity>>
 }

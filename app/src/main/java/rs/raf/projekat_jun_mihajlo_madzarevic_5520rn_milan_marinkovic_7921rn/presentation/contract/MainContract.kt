@@ -28,6 +28,8 @@ interface MainContract {
 
         fun fetchAllByCategory(category: String)
 
+        fun getAllByNameSearch(name: String)
+
         fun getAllByName(name: String)
 
         fun getAll()

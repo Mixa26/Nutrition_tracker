@@ -70,7 +70,7 @@ class HomeFragment : Fragment() {
             }
             else{
                 mealViewModel.getAll()
-                mealViewModel.getAllByName(filter)
+                mealViewModel.getAllByNameSearch(filter)
             }
         }
     }

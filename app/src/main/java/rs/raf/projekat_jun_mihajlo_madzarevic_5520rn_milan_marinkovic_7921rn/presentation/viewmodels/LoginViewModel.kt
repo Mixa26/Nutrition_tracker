@@ -40,4 +40,9 @@ class LoginViewModel (
             .doOnError { Timber.e(it) }
             .doOnSuccess { Timber.e("Retrieved user") }
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        subscriptions.dispose()
+    }
 }

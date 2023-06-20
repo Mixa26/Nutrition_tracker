@@ -2,15 +2,72 @@ package rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.da
 
 import io.reactivex.Observable
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.datasources.local.MealDao
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.datasources.local.NinjaMealDao
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.datasources.remote.MealService
-import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.CategoryEntity
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.datasources.remote.NinjaMealService
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.MealEntity
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.NinjaMealEntity
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.NinjaMealResponse
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.Resource
 
 class MealRepositoryImpl (
     private val localDataSource: MealDao,
-    private val remoteDataSource: MealService
+//    private val ninjaLocalDataSource: NinjaMealDao,
+    private val remoteDataSource: MealService,
+//    private val ninjaRemoteDataSource: NinjaMealService
 ) : MealRepository {
+
+//    override fun ninjaFetchAllByTitle(title: String): Observable<Resource<Unit>> {
+//        return ninjaRemoteDataSource
+//            .getAllByTitle(title)
+//            .doOnNext{
+//                val entities = it.meals.map{
+//                    NinjaMealEntity(
+//                        0,
+//                        it.name,
+//                        it.calories,
+//                        it.serving_size_g,
+//                        it.fat_total_g,
+//                        it.fat_saturated_g,
+//                        it.protein_g,
+//                        it.sodium_mg,
+//                        it.potassium_mg,
+//                        it.cholesterol_mg,
+//                        it.carbohydrates_total_g,
+//                        it.fiber_g,
+//                        it.sugar_g
+//                    )
+//                }
+//                ninjaLocalDataSource.deleteAndInsertAll(entities)
+//            }
+//            .map {
+//                Resource.Success(Unit)
+//            }
+//    }
+//
+//    override fun ninjaGetAll(): Observable<List<NinjaMealEntity>> {
+//        return ninjaLocalDataSource
+//            .getAll()
+//            .map{
+//                it.map{
+//                    NinjaMealEntity(
+//                        it.id,
+//                        it.name,
+//                        it.calories,
+//                        it.serving_size_g,
+//                        it.fat_total_g,
+//                        it.fat_saturated_g,
+//                        it.protein_g,
+//                        it.sodium_mg,
+//                        it.potassium_mg,
+//                        it.cholesterol_mg,
+//                        it.carbohydrates_total_g,
+//                        it.fiber_g,
+//                        it.sugar_g
+//                    )
+//                }
+//            }
+//    }
 
     override fun fetchAllByName(name: String): Observable<Resource<Unit>> {
         return remoteDataSource
@@ -275,7 +332,4 @@ class MealRepositoryImpl (
                 }
             }
     }
-
-
-
 }

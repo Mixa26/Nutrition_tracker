@@ -52,8 +52,25 @@ class MealViewModel (
         subscriptions.add(subscription)
     }
 
-    override fun getAllByName(name: String) {
+    override fun getAllByNameSearch(name: String) {
         publishSubject.onNext(name)
+    }
+
+    override fun getAllByName(name: String) {
+        val subscription = mealRepository
+            .getAllByName(name)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    mealState.value = MealState.Success(it)
+                },
+                {
+                    mealState.value = MealState.Error("Error happened while fetching data from db")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
     }
 
     override fun fetchAllByName(name: String) {
@@ -115,5 +132,10 @@ class MealViewModel (
                 }
             )
         subscriptions.add(subscription)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        subscriptions.dispose()
     }
 }

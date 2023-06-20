@@ -72,7 +72,7 @@ class DetailedMealFragment(private val meal: MealEntity) : Fragment() {
                 Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
             }
             is MealState.DataFetched -> {
-                showLoadingState(true)
+                showLoadingState(false)
                 Toast.makeText(context, "Fresh data fetched from the server", Toast.LENGTH_LONG).show()
             }
             is MealState.Loading -> {
@@ -168,7 +168,6 @@ class DetailedMealFragment(private val meal: MealEntity) : Fragment() {
     }
 
     private fun showLoadingState(loading: Boolean) {
-        binding.detailedMealBackButton.isVisible = !loading
         binding.detailedMealPic.isVisible = !loading
         binding.detailedMealCategory.isVisible = !loading
         binding.detailedMealArea.isVisible = !loading

@@ -31,11 +31,11 @@ class CategoryViewModel(
                     when(it) {
                         is Resource.Loading -> categoryState.value = CategoryState.Loading
                         is Resource.Success -> categoryState.value = CategoryState.DataFetched
-                        is Resource.Error -> categoryState.value = CategoryState.Error("Error happened while fetching data from the server")
+                        is Resource.Error -> categoryState.value = CategoryState.Error("Error happened while fetching data from the server for categories")
                     }
                 },
                 {
-                    categoryState.value = CategoryState.Error("Error happened while fetching data from the server")
+                    categoryState.value = CategoryState.Error("Error happened while fetching data from the server for categories")
                     Timber.e(it)
                 }
             )
@@ -52,10 +52,15 @@ class CategoryViewModel(
                     categoryState.value = CategoryState.Success(it)
                 },
                 {
-                    categoryState.value = CategoryState.Error("Error happened while fetching data from db")
+                    categoryState.value = CategoryState.Error("Error happened while fetching data from db for categories")
                     Timber.e(it)
                 }
             )
         subscriptions.add(subscription)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        subscriptions.dispose()
     }
 }

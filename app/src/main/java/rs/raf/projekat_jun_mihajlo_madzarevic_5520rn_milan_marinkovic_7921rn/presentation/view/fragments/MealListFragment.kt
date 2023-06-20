@@ -70,7 +70,7 @@ class MealListFragment(private val category: String) : Fragment() {
             }
             else{
                 mealViewModel.getAll()
-                mealViewModel.getAllByName(filter)
+                mealViewModel.getAllByNameSearch(filter)
             }
         }
 
