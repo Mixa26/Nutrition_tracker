@@ -169,7 +169,7 @@ class SaveMealFragment(private val meal: MealEntity) : Fragment() {
     private fun renderState(state: AddMealState) {
         when (state) {
             is AddMealState.Success -> {
-                Toast.makeText(context, R.string.saveMeal, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.mealAdded, Toast.LENGTH_SHORT).show()
                 (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, DetailedMealFragment(meal, false)).commit()
             }
             is AddMealState.Error -> {

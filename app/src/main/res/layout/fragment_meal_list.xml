@@ -81,6 +81,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mealsRV" />
 
+    <Button
+        android:id="@+id/mealStatisticsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="@string/statistics"
+        app:layout_constraintBottom_toBottomOf="@+id/mealsRV"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ProgressBar
         android:id="@+id/loadingMeals"
         android:layout_width="wrap_content"

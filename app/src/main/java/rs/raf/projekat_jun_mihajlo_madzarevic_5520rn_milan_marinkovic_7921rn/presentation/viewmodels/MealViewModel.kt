@@ -13,6 +13,7 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.dat
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.contract.MainContract
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.AddMealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.MealState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.SavedMealState
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -25,6 +26,7 @@ class MealViewModel (
 
     override val mealState: MutableLiveData<MealState> = MutableLiveData()
     override val savedMealState: MutableLiveData<MealState> = MutableLiveData()
+    override val savedMealOriginalState: MutableLiveData<SavedMealState> = MutableLiveData()
     override val addMeal: MutableLiveData<AddMealState> = MutableLiveData()
 
     init {
@@ -156,23 +158,23 @@ class MealViewModel (
         subscriptions.add(subscription)
     }
 
-//    override fun getAllSaved() {
-//        val subscription = mealRepository
-//            .getAllSaved()
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe(
-//                {
-//                    savedMealState.value = MealState.Success(it)
-//                },
-//                {
-//                    savedMealState.value = MealState.Error("Error happened while fetching data from db")
-//                    Timber.e(it)
-//                }
-//            )
-//        subscriptions.add(subscription)
-//    }
-//
+    override fun getAllSaved() {
+        val subscription = mealRepository
+            .getAllSaved()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    savedMealOriginalState.value = SavedMealState.Success(it)
+                },
+                {
+                    savedMealOriginalState.value = SavedMealState.Error("Error happened while fetching data from db")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
 //    override fun getAllSavedByName(name: String) {
 //        val subscription = mealRepository
 //            .getAllSavedByName(name)

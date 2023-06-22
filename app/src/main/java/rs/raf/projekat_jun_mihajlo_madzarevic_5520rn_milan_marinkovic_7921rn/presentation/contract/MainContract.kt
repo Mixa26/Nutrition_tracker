@@ -29,6 +29,8 @@ interface MainContract {
 
         val savedMealState: LiveData<MealState>
 
+        val savedMealOriginalState: LiveData<SavedMealState>
+
         val addMeal: LiveData<AddMealState>
 
         fun fetchAllByName(name: String)
@@ -43,8 +45,8 @@ interface MainContract {
 
         fun saveMeal(meal: SavedMealEntity)
 
-//        fun getAllSaved()
-//
+        fun getAllSaved()
+
 //        fun getAllSavedByName(name: String)
 
         fun getAllSavedAsMealEntity()

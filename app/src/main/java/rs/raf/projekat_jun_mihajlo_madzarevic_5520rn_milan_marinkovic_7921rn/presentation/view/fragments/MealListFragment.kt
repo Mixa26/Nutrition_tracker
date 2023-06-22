@@ -103,6 +103,10 @@ class MealListFragment(private val category: String) : Fragment() {
             (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, HomeFragment()).commit()
         }
 
+        binding.mealStatisticsButton.setOnClickListener{
+            (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, StatisticsFragment(category)).commit()
+        }
+
         //Load previous 10 meals
         binding.mealBackwardPagination.setOnClickListener{
             if ((currentPage-1) >= 0){

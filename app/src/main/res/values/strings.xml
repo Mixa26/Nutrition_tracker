@@ -25,4 +25,6 @@
     <string name="apiMeals">All Meals</string>
     <string name="savedMeals">Saved Meals</string>
     <string name="mealAdded">Meal successfully added</string>
+    <string name="mealStatisticTitle">Meals added in the past 7 days</string>
+    <string name="statistics">Statistics</string>
 </resources>
