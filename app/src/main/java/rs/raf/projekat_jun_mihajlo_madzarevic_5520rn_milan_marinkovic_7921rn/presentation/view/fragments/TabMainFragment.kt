@@ -4,27 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
-import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.R
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.databinding.FragmentTabMainBinding
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.recycler.adapter.ViewPageAdapter
 
 class TabMainFragment : Fragment() {
 
+    private lateinit var binding: FragmentTabMainBinding
+
     private lateinit var pager: ViewPager
     private lateinit var tab: TabLayout
-    private lateinit var bar: Toolbar
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-//        return super.onCreateView(inflater, container, savedInstanceState)
-        return inflater.inflate(R.layout.fragment_tab_main, container, false)!!
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = FragmentTabMainBinding.inflate(layoutInflater)
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -38,11 +34,8 @@ class TabMainFragment : Fragment() {
     }
 
     private fun initTab(view: View){
-        pager = view.findViewById(R.id.viewPager)
-        tab = view.findViewById(R.id.tabs)
-        bar = view.findViewById(R.id.toolbar)
-
-        (requireActivity() as AppCompatActivity).setSupportActionBar(bar)
+        pager = binding.viewPager
+        tab = binding.tabs
 
         val adapter = ViewPageAdapter(childFragmentManager)
 

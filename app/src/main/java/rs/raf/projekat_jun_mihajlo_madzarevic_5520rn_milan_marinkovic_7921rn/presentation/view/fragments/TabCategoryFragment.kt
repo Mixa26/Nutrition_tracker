@@ -66,7 +66,7 @@ class TabCategoryFragment : Fragment() {
     }
 
     private fun initReycler(){
-        mealAdapter = MealAdapter(MealDiffItemCallback())
+        mealAdapter = MealAdapter(MealDiffItemCallback(), null)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = mealAdapter
     }

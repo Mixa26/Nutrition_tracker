@@ -70,7 +70,9 @@ class MealListFragment(private val category: String?) : Fragment() {
                 when (tab.position) {
                     0 -> {
                         mealViewModel.getAll()
-                        mealViewModel.fetchAllByCategory(category)
+                        if (category != null) {
+                            mealViewModel.fetchAllByCategory(category)
+                        }
                     }
                     1 -> {
                         mealViewModel.getAllSavedAsMealEntity()
@@ -85,7 +87,12 @@ class MealListFragment(private val category: String?) : Fragment() {
         binding.searchMealList.doAfterTextChanged {
             val filter = it.toString()
             if (filter.isEmpty()){
-                mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
+                if (mealsPerPage < allMeals.size) {
+                    mealAdapter.submitList(allMeals.subList(0, mealsPerPage))
+                }
+                else{
+                    mealAdapter.submitList(allMeals.subList(0, allMeals.size))
+                }
             }
             else{
                 if (binding.mealListTabLayout.selectedTabPosition == 0) {
@@ -104,7 +111,9 @@ class MealListFragment(private val category: String?) : Fragment() {
         }
 
         binding.mealStatisticsButton.setOnClickListener{
-            (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, StatisticsFragment(category)).commit()
+            if (category != null) {
+                (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, StatisticsFragment(category)).commit()
+            }
         }
 
         //Load previous 10 meals
