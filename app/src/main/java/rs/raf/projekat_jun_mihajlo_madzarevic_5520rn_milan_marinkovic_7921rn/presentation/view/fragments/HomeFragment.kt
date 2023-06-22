@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -17,6 +18,7 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.dat
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.R
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.contract.MainContract
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.databinding.FragmentHomeBinding
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.activities.MainActivity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.recycler.adapter.CategoryAdapter
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.recycler.differ.CategoryDiffItemCallback
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.CategoryState
@@ -72,6 +74,9 @@ class HomeFragment : Fragment() {
                 mealViewModel.getAll()
                 mealViewModel.getAllByNameSearch(filter)
             }
+        }
+        binding.filterBtn.setOnClickListener {
+            (requireActivity() as MainActivity).supportFragmentManager.beginTransaction().replace((requireActivity() as MainActivity).binding.fragmentContainer.id , TabMainFragment()).commit()
         }
     }
 
@@ -143,7 +148,7 @@ class HomeFragment : Fragment() {
         var categories: MutableList<String> = mutableListOf()
 
         for (meal in meals){
-            categories.add(meal.strCategory.lowercase())
+            meal.strCategory?.let { categories.add(it.lowercase()) }
         }
 
         return categories

@@ -24,7 +24,7 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.pre
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.viewmodels.MealViewModel
 import timber.log.Timber
 
-class MealListFragment(private val category: String) : Fragment() {
+class MealListFragment(private val category: String?) : Fragment() {
     private lateinit var binding : FragmentMealListBinding
 
     private lateinit var mealAdapter: MealAdapter
@@ -107,7 +107,9 @@ class MealListFragment(private val category: String) : Fragment() {
             renderState(it)
         })
         mealViewModel.getAll()
-        mealViewModel.fetchAllByCategory(category)
+
+        if(category != null)
+            mealViewModel.fetchAllByCategory(category)
     }
 
     private fun renderState(state: MealState) {
