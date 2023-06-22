@@ -43,6 +43,12 @@ interface MainContract {
 
         fun getAll()
 
+        fun fetchAllByArea(area: String)
+        fun fetchAllByIngredient(ingredient: String)
+
+        fun fetchAllByNameForTag(name: String)
+        fun getAllByTag(tag: String)
+
         fun saveMeal(meal: SavedMealEntity)
 
         fun getAllSaved()

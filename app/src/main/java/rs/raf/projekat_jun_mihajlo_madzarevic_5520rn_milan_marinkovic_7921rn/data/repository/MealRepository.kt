@@ -30,4 +30,13 @@ interface MealRepository {
     fun getAllSavedAsMealEntity(): Observable<List<MealEntity>>
 
     fun getAllSavedByNameAsMealEntity(name: String): Observable<List<MealEntity>>
+//    fun ninjaFetchAllByTitle(title: String): Observable<Resource<Unit>>
+//
+//    fun ninjaGetAll(): Observable<List<NinjaMealEntity>>
+
+    fun fetchAllByArea(area: String): Observable<Resource<Unit>>
+    fun fetchAllByIngredient(ingredient: String): Observable<Resource<Unit>>
+
+    fun fetchAllByNameForTag(name: String): Observable<Resource<Unit>>
+    fun getAllByTag(tag: String):Observable<List<MealEntity>>
 }

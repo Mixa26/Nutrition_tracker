@@ -29,4 +29,7 @@ abstract class MealDao {
         deleteAll()
         insertAll(entities).blockingAwait()
     }
+
+    @Query("SELECT * FROM meals WHERE strTags LIKE '%' || LOWER(:tag) || '%'")
+    abstract fun getAllByTag(tag: String): Observable<List<MealEntity>>
 }

@@ -10,4 +10,5 @@ interface CategoryService {
 
     @GET("categories.php")
     fun getAll(): Observable<AllCategoriesResponse>
+
 }

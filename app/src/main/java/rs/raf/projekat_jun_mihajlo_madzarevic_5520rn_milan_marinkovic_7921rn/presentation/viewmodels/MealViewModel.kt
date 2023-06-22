@@ -124,6 +124,90 @@ class MealViewModel (
         subscriptions.add(subscription)
     }
 
+    override fun fetchAllByArea(area: String) {
+        val subscription = mealRepository
+            .fetchAllByArea(area)
+            .startWith(Resource.Loading())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    when(it){
+                        is Resource.Loading -> mealState.value = MealState.Loading
+                        is Resource.Success -> mealState.value = MealState.DataFetched
+                        is Resource.Error -> mealState.value = MealState.Error("Error happened while fetchin data from the server")
+                    }
+                },
+                {
+                    mealState.value = MealState.Error("Error happened while fetching data from the server")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
+    override fun fetchAllByIngredient(ingredient: String) {
+        val subscription = mealRepository
+            .fetchAllByIngredient(ingredient)
+            .startWith(Resource.Loading())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    when(it){
+                        is Resource.Loading -> mealState.value = MealState.Loading
+                        is Resource.Success -> mealState.value = MealState.DataFetched
+                        is Resource.Error -> mealState.value = MealState.Error("Error happened while fetching data from the server")
+                    }
+                },
+                {
+                    mealState.value = MealState.Error("Error happened while fetching data from the server")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
+    override fun fetchAllByNameForTag(name: String) {
+        val subscription = mealRepository
+            .fetchAllByNameForTag(name)
+            .startWith(Resource.Loading())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    when(it) {
+                        is Resource.Loading -> mealState.value = MealState.Loading
+                        is Resource.Success -> mealState.value = MealState.DataFetched
+                        is Resource.Error -> mealState.value = MealState.Error("Error happened while fetching data from the server")
+                    }
+                },
+                {
+                    mealState.value = MealState.Error("Error happened while fetching data from the server")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
+    override fun getAllByTag(tag: String) {
+        val subscription = mealRepository
+            .getAllByTag(tag)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    mealState.value = MealState.Success(it)
+                },
+                {
+                    mealState.value = MealState.Error("Error happened while fetching data from db")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
+
     override fun getAll() {
         val subscription = mealRepository
             .getAll()
@@ -225,6 +309,7 @@ class MealViewModel (
             )
         subscriptions.add(subscription)
     }
+
 
     override fun onCleared() {
         super.onCleared()
