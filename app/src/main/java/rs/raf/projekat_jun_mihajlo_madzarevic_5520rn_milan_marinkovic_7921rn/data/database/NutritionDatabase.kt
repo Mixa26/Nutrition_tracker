@@ -5,18 +5,21 @@ import androidx.room.RoomDatabase
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.datasources.local.CategoryDao
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.datasources.local.MealDao
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.datasources.local.NinjaMealDao
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.datasources.local.SavedMealDao
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.datasources.local.UserDao
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.CategoryEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.MealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.NinjaMealEntity
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.SavedMealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.UserEntity
 
 @Database(
     entities = [UserEntity::class,
                CategoryEntity::class,
                MealEntity::class,
-               NinjaMealEntity::class],
-    version = 6,
+               NinjaMealEntity::class,
+               SavedMealEntity::class],
+    version = 7,
     exportSchema = false)
 abstract class NutritionDatabase : RoomDatabase() {
     abstract fun getUserDao(): UserDao
@@ -25,4 +28,6 @@ abstract class NutritionDatabase : RoomDatabase() {
     abstract fun getMealDao(): MealDao
 
     abstract fun getNinjaMealDao(): NinjaMealDao
+
+    abstract fun getSavedMealDao(): SavedMealDao
 }

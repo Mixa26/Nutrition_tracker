@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.tabs.TabLayout
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.MealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.R
@@ -57,20 +58,43 @@ class MealListFragment(private val category: String) : Fragment() {
     }
 
     private fun initRecycler(){
-        mealAdapter = MealAdapter(MealDiffItemCallback())
+        mealAdapter = MealAdapter(MealDiffItemCallback(), binding)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = mealAdapter
     }
 
     private fun initListeners() {
+        binding.mealListTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+
+                when (tab.position) {
+                    0 -> {
+                        mealViewModel.getAll()
+                        mealViewModel.fetchAllByCategory(category)
+                    }
+                    1 -> {
+                        mealViewModel.getAllSavedAsMealEntity()
+                    }
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
+
         binding.searchMealList.doAfterTextChanged {
             val filter = it.toString()
             if (filter.isEmpty()){
                 mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
             }
             else{
-                mealViewModel.getAll()
-                mealViewModel.getAllByNameSearch(filter)
+                if (binding.mealListTabLayout.selectedTabPosition == 0) {
+                    mealViewModel.getAll()
+                    mealViewModel.getAllByNameSearch(filter)
+                }
+                else{
+                    mealViewModel.getAllSavedByNameAsMealEntity(filter)
+                }
             }
         }
 
@@ -106,6 +130,10 @@ class MealListFragment(private val category: String) : Fragment() {
             Timber.e(it.toString())
             renderState(it)
         })
+        mealViewModel.savedMealState.observe(viewLifecycleOwner, Observer {
+            Timber.e(it.toString())
+            renderState(it)
+        })
         mealViewModel.getAll()
         mealViewModel.fetchAllByCategory(category)
     }
@@ -133,6 +161,7 @@ class MealListFragment(private val category: String) : Fragment() {
             is MealState.Loading -> {
                 showLoadingState(true)
             }
+
         }
     }
 

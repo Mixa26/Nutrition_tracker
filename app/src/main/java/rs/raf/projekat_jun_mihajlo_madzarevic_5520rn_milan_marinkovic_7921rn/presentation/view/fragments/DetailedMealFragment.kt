@@ -19,13 +19,12 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.pre
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.MealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.viewmodels.MealViewModel
 import timber.log.Timber
+import java.io.File
 
-class DetailedMealFragment(private val meal: MealEntity) : Fragment() {
+class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal: Boolean) : Fragment() {
     private lateinit var binding : FragmentDetailedMealBinding
 
     private val mealViewModel: MainContract.MealViewModel by viewModel<MealViewModel>()
-
-    private lateinit var mealResponse: MealEntity
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentDetailedMealBinding.inflate(layoutInflater)
@@ -49,6 +48,11 @@ class DetailedMealFragment(private val meal: MealEntity) : Fragment() {
         binding.detailedMealBackButton.setOnClickListener{
             (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, MealListFragment(meal.strCategory)).commit()
         }
+
+        binding.detailedMealSaveMealButton.setOnClickListener{
+            (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, SaveMealFragment(meal)).commit()
+        }
+
     }
 
     private fun initObservers(){
@@ -56,16 +60,25 @@ class DetailedMealFragment(private val meal: MealEntity) : Fragment() {
             Timber.e(it.toString())
             renderState(it)
         })
-        mealViewModel.getAllByName(meal.strMeal)
-        mealViewModel.fetchAllByName(meal.strMeal)
+        mealViewModel.savedMealState.observe(viewLifecycleOwner, Observer {
+            Timber.e(it.toString())
+            renderState(it)
+        })
+        if (!isSavedMeal) {
+            mealViewModel.getAllByName(meal.strMeal)
+            mealViewModel.fetchAllByName(meal.strMeal)
+        }
+        else{
+            mealViewModel.getAllSavedByNameAsMealEntity(meal.strMeal)
+        }
     }
 
     private fun renderState(state: MealState) {
         when (state) {
             is MealState.Success -> {
                 showLoadingState(false)
-                mealResponse = state.meals[0]
-                fillData(mealResponse)
+                meal = state.meals[0]
+                fillData(meal)
             }
             is MealState.Error -> {
                 showLoadingState(false)
@@ -82,7 +95,12 @@ class DetailedMealFragment(private val meal: MealEntity) : Fragment() {
     }
 
     private fun fillData(data: MealEntity){
-        Picasso.get().load(data.strMealThumb).into(binding.detailedMealPic)
+        if (data.strMealThumb.startsWith("http")) {
+            Picasso.get().load(data.strMealThumb).into(binding.detailedMealPic)
+        }
+        else{
+            Picasso.get().load(File(data.strMealThumb)).into(binding.detailedMealPic)
+        }
         binding.detailedMealCategory.text = getString(R.string.detailedMealCategory) + " " + data.strCategory
 
         if (data.strArea != null)

@@ -17,4 +17,12 @@
     <string name="detailedMealVideo">Video:</string>
     <string name="detailedMealIngredients">Ingredients:</string>
     <string name="searchByMeals">Search by meals</string>
+    <string name="saveMeal">Save meal</string>
+    <string name="breakfast">Breakfast</string>
+    <string name="lunch">Lunch</string>
+    <string name="supper">Supper</string>
+    <string name="dinner">Dinner</string>
+    <string name="apiMeals">All Meals</string>
+    <string name="savedMeals">Saved Meals</string>
+    <string name="mealAdded">Meal successfully added</string>
 </resources>

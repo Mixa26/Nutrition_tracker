@@ -1,9 +1,11 @@
 package rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.repository
 
+import io.reactivex.Completable
 import io.reactivex.Observable
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.MealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.NinjaMealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.Resource
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.SavedMealEntity
 
 interface MealRepository {
 
@@ -15,7 +17,17 @@ interface MealRepository {
 
     fun getAll(): Observable<List<MealEntity>>
 
-//    fun ninjaFetchAllByTitle(title: String): Observable<Resource<Unit>>
-//
-//    fun ninjaGetAll(): Observable<List<NinjaMealEntity>>
+    fun ninjaFetchAllByTitle(title: String): Observable<Resource<Unit>>
+
+    fun ninjaGetAll(): Observable<List<NinjaMealEntity>>
+
+    fun saveMeal(meal: SavedMealEntity): Completable
+
+    fun getAllSaved(): Observable<List<SavedMealEntity>>
+
+    fun getAllSavedByName(name: String): Observable<List<SavedMealEntity>>
+
+    fun getAllSavedAsMealEntity(): Observable<List<MealEntity>>
+
+    fun getAllSavedByNameAsMealEntity(name: String): Observable<List<MealEntity>>
 }

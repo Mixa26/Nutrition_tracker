@@ -16,6 +16,7 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.pre
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.activities.MainActivity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.fragments.MealListFragment
 import timber.log.Timber
+import java.io.File
 
 class CategoryAdapter(diffCallback: DiffUtil.ItemCallback<CategoryEntity>) : ListAdapter<CategoryEntity, CategoryAdapter.CategoryViewHolder>(diffCallback){
 

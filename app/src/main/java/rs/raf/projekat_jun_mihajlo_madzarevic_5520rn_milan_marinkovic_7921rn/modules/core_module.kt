@@ -31,7 +31,7 @@ val coreModule = module {
 
     single { createRetrofit(moshi = get(), httpClient = get()) }
 
-    //single { createNinjaRetrofit(httpClient = get())}
+//    single { createNinjaRetrofit(httpClient = get())}
 
     single { createMoshi() }
 
@@ -57,21 +57,29 @@ fun createRetrofit(moshi: Moshi,
         .build()
 }
 
-fun createNinjaRetrofit(httpClient: OkHttpClient
-): Retrofit {
-    return Retrofit.Builder()
-        .baseUrl("https://api.api-ninjas.com/v1/")
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .addConverterFactory(GsonConverterFactory.create())
-        .client(httpClient)
-        .build()
-}
+//fun createNinjaRetrofit(httpClient: OkHttpClient
+//): Retrofit {
+//    return Retrofit.Builder()
+//        .baseUrl("https://api.api-ninjas.com/v1/")
+//        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+//        .addConverterFactory(GsonConverterFactory.create())
+//        .client(httpClient)
+//        .build()
+//}
 
 fun createOkHttpClient(): OkHttpClient {
     val httpClient = OkHttpClient.Builder()
     httpClient.readTimeout(60, TimeUnit.SECONDS)
     httpClient.connectTimeout(60, TimeUnit.SECONDS)
     httpClient.writeTimeout(60, TimeUnit.SECONDS)
+
+//    httpClient.addInterceptor { chain ->
+//        val originalRequest = chain.request()
+//        val modifiedRequest = originalRequest.newBuilder()
+//            .header("X-Api-Key", "jfzPUX0pkhrxvppBbbckcw==rsaChQvyV0MZ5C1x")
+//            .build()
+//        chain.proceed(modifiedRequest)
+//    }
 
     if (BuildConfig.DEBUG) {
         val logging = HttpLoggingInterceptor()
