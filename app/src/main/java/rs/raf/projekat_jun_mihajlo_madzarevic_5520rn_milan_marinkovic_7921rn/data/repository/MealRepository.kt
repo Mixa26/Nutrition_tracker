@@ -2,12 +2,22 @@ package rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.da
 
 import io.reactivex.Completable
 import io.reactivex.Observable
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.CalorieIngredientEntity
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.CalorieMealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.MealEntity
-import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.NinjaMealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.Resource
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.SavedMealEntity
 
 interface MealRepository {
+
+    fun fetchAllIngredientsByName(name: String): Observable<Resource<Unit>>
+
+    fun getAllIngredients(): Observable<List<CalorieIngredientEntity>>
+    fun fetchAllByNameForCalorie(name: String): Observable<Resource<Unit>>
+
+    fun getAllCalorie(): Observable<List<CalorieMealEntity>>
+
+    fun deleteAllCalorie(): Completable
 
     fun fetchAllByName(name: String): Observable<Resource<Unit>>
 
@@ -16,10 +26,6 @@ interface MealRepository {
     fun fetchAllByCategory(category: String): Observable<Resource<Unit>>
 
     fun getAll(): Observable<List<MealEntity>>
-
-    fun ninjaFetchAllByTitle(title: String): Observable<Resource<Unit>>
-
-    fun ninjaGetAll(): Observable<List<NinjaMealEntity>>
 
     fun saveMeal(meal: SavedMealEntity): Completable
 
@@ -30,9 +36,6 @@ interface MealRepository {
     fun getAllSavedAsMealEntity(): Observable<List<MealEntity>>
 
     fun getAllSavedByNameAsMealEntity(name: String): Observable<List<MealEntity>>
-//    fun ninjaFetchAllByTitle(title: String): Observable<Resource<Unit>>
-//
-//    fun ninjaGetAll(): Observable<List<NinjaMealEntity>>
 
     fun fetchAllByArea(area: String): Observable<Resource<Unit>>
     fun fetchAllByIngredient(ingredient: String): Observable<Resource<Unit>>

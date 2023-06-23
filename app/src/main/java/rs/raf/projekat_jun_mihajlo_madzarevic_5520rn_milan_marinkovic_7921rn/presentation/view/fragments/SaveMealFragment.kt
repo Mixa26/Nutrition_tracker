@@ -154,7 +154,7 @@ class SaveMealFragment(private val meal: MealEntity) : Fragment() {
                         meal.strSource,
                         meal.strImageSource,
                         meal.strCreativeCommonsConfirmed,
-                        meal.dateModified,
+                        meal.dateModified
                     )
                 )
             }

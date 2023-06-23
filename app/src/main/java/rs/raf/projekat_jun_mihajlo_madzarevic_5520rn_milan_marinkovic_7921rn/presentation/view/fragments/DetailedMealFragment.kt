@@ -60,10 +60,6 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
             Timber.e(it.toString())
             renderState(it)
         })
-        mealViewModel.savedMealState.observe(viewLifecycleOwner, Observer {
-            Timber.e(it.toString())
-            renderState(it)
-        })
         if (!isSavedMeal) {
             mealViewModel.getAllByName(meal.strMeal)
             mealViewModel.fetchAllByName(meal.strMeal)

@@ -27,4 +27,10 @@
     <string name="mealAdded">Meal successfully added</string>
     <string name="mealStatisticTitle">Meals added in the past 7 days</string>
     <string name="statistics">Statistics</string>
+    <string name="calories">Calories</string>
+    <string name="caloriesLowerBond">Greater then</string>
+    <string name="caloriesUpperBond">Less then</string>
+    <string name="filter">Filter</string>
+    <string name="calorieFilterTitle">Filter and sort by calories</string>
+    <string name="error_string_not_number">Inputs must be numbers!</string>
 </resources>

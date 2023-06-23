@@ -1,9 +1,11 @@
 package rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models
 
-import com.squareup.moshi.JsonClass
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-@JsonClass(generateAdapter = true)
-data class NinjaMealResponse (
+@Entity(tableName = "calorieingredients")
+data class CalorieIngredientEntity (
+    @PrimaryKey(autoGenerate = false)
     val name: String,
     val calories: Float,
     val serving_size_g: Float,
@@ -15,5 +17,5 @@ data class NinjaMealResponse (
     val cholesterol_mg: Float,
     val carbohydrates_total_g: Float,
     val fiber_g: Float,
-    val sugar_g: Float,
+    val sugar_g:Float
 )

@@ -1,11 +1,17 @@
 package rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.contract
 
 import androidx.lifecycle.LiveData
+import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.CalorieMealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.SavedMealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.UserEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.AddMealState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.CalorieMealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.CategoryState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteCalorieMealState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.IngredientState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.MealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.SavedMealState
 
@@ -27,11 +33,26 @@ interface MainContract {
 
         val mealState: LiveData<MealState>
 
-        val savedMealState: LiveData<MealState>
-
         val savedMealOriginalState: LiveData<SavedMealState>
 
+        val calorieMealState: LiveData<CalorieMealState>
+
         val addMeal: LiveData<AddMealState>
+
+        val deleteCalorieMealState: LiveData<DeleteCalorieMealState>
+
+        val ingredientState: LiveData<IngredientState>
+
+        fun fetchAllIngredientsByName(name: String)
+
+        fun getAllIngredients()
+
+        fun fetchAllByNameForCalorie(name: String)
+
+        fun getAllCalorie()
+
+        fun deleteAllCalorie()
+
 
         fun fetchAllByName(name: String)
 

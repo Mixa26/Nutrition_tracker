@@ -41,6 +41,10 @@ class MealAdapter(diffCallback: DiffUtil.ItemCallback<MealEntity>, private val f
         fun bind(meal: MealEntity){
             itemView.findViewById<TextView>(R.id.mealTitle).text = meal.strMeal
 
+            if (meal.idMeal.startsWith("kcal")){
+                itemView.findViewById<TextView>(R.id.mealCalories).text = meal.idMeal
+            }
+
             if (meal.strMealThumb.startsWith("http")){
                 Picasso.get().load(meal.strMealThumb).into(itemView.findViewById(R.id.mealImage) as ImageView)
             }

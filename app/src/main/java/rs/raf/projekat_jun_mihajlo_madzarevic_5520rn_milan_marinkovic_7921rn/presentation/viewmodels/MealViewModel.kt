@@ -7,11 +7,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.CalorieMealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.Resource
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.SavedMealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.repository.MealRepository
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.contract.MainContract
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.AddMealState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.CalorieMealState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteCalorieMealState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.IngredientState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.MealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.SavedMealState
 import timber.log.Timber
@@ -25,9 +29,11 @@ class MealViewModel (
     private val publishSubject: PublishSubject<String> = PublishSubject.create()
 
     override val mealState: MutableLiveData<MealState> = MutableLiveData()
-    override val savedMealState: MutableLiveData<MealState> = MutableLiveData()
     override val savedMealOriginalState: MutableLiveData<SavedMealState> = MutableLiveData()
     override val addMeal: MutableLiveData<AddMealState> = MutableLiveData()
+    override val deleteCalorieMealState: MutableLiveData<DeleteCalorieMealState> = MutableLiveData()
+    override val calorieMealState: MutableLiveData<CalorieMealState> = MutableLiveData()
+    override val ingredientState: MutableLiveData<IngredientState> = MutableLiveData()
 
     init {
         val subscription = publishSubject
@@ -61,6 +67,101 @@ class MealViewModel (
 
     override fun getAllByNameSearch(name: String) {
         publishSubject.onNext(name)
+    }
+
+    override fun fetchAllIngredientsByName(name: String) {
+        val subscription = mealRepository
+            .fetchAllIngredientsByName(name)
+            .startWith(Resource.Loading())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    when(it) {
+                        is Resource.Loading -> ingredientState.value = IngredientState.Loading
+                        is Resource.Success -> ingredientState.value = IngredientState.DataFetched
+                        is Resource.Error -> ingredientState.value = IngredientState.Error("Error happened while fetching data from the server")
+                    }
+                },
+                {
+                    ingredientState.value = IngredientState.Error("Error happened while fetching data from the server")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
+    override fun getAllIngredients() {
+        val subscription = mealRepository
+            .getAllIngredients()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    ingredientState.value = IngredientState.Success(it)
+                },
+                {
+                    ingredientState.value = IngredientState.Error("Error happened while fetching data from db")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
+    override fun fetchAllByNameForCalorie(name: String) {
+        val subscription = mealRepository
+            .fetchAllByNameForCalorie(name)
+            .startWith(Resource.Loading())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    when(it) {
+                        is Resource.Loading -> calorieMealState.value = CalorieMealState.Loading
+                        is Resource.Success -> calorieMealState.value = CalorieMealState.DataFetched
+                        is Resource.Error -> calorieMealState.value = CalorieMealState.Error("Error happened while fetching data from the server")
+                    }
+                },
+                {
+                    calorieMealState.value = CalorieMealState.Error("Error happened while fetching data from the server")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
+    override fun getAllCalorie() {
+        val subscription = mealRepository
+            .getAllCalorie()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    calorieMealState.value = CalorieMealState.Success(it)
+                },
+                {
+                    calorieMealState.value = CalorieMealState.Error("Error happened while fetching data from db")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
+    override fun deleteAllCalorie() {
+        val subscription = mealRepository
+            .deleteAllCalorie()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    deleteCalorieMealState.value = DeleteCalorieMealState.Success
+                },
+                {
+                    deleteCalorieMealState.value = DeleteCalorieMealState.Error("Error happened while adding movie")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
     }
 
     override fun getAllByName(name: String) {
@@ -266,10 +367,10 @@ class MealViewModel (
 //            .observeOn(AndroidSchedulers.mainThread())
 //            .subscribe(
 //                {
-//                    savedMealState.value = MealState.Success(it)
+//                    mealState.value = MealState.Success(it)
 //                },
 //                {
-//                    savedMealState.value = MealState.Error("Error happened while fetching data from db")
+//                    mealState.value = MealState.Error("Error happened while fetching data from db")
 //                    Timber.e(it)
 //                }
 //            )
@@ -283,10 +384,10 @@ class MealViewModel (
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
-                    savedMealState.value = MealState.Success(it)
+                    mealState.value = MealState.Success(it)
                 },
                 {
-                    savedMealState.value = MealState.Error("Error happened while fetching data from db")
+                    mealState.value = MealState.Error("Error happened while fetching data from db")
                     Timber.e(it)
                 }
             )
@@ -300,10 +401,10 @@ class MealViewModel (
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
-                    savedMealState.value = MealState.Success(it)
+                    mealState.value = MealState.Success(it)
                 },
                 {
-                    savedMealState.value = MealState.Error("Error happened while fetching data from db")
+                    mealState.value = MealState.Error("Error happened while fetching data from db")
                     Timber.e(it)
                 }
             )

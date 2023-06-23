@@ -13,13 +13,15 @@ val mealModule = module {
 
     viewModel { MealViewModel(mealRepository = get()) }
 
-    single<MealRepository> { MealRepositoryImpl(localDataSource = get(), savedLocalDataSource = get(), ninjaLocalDataSource = get(), remoteDataSource =  get(), ninjaRemoteDataSource = get()) }
+    single<MealRepository> { MealRepositoryImpl(localDataSource = get(), savedLocalDataSource = get(), calorieLocalDataSource = get(), calorieIngredientLocalDataSource = get(), remoteDataSource =  get(), ninjaRemoteDataSource = get()) }
 
     single { get<NutritionDatabase>().getMealDao() }
 
-    single { get<NutritionDatabase>().getNinjaMealDao() }
-
     single { get<NutritionDatabase>().getSavedMealDao() }
+
+    single { get<NutritionDatabase>().getCalorieMealDao() }
+
+    single { get<NutritionDatabase>().getCalorieIngredientDao() }
 
     single<MealService> { create(retrofit = get()) }
 
