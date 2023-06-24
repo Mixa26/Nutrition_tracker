@@ -11,11 +11,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.squareup.picasso.Picasso
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.CalorieMealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.MealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.R
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.contract.MainContract
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.databinding.FragmentDetailedMealBinding
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.activities.MainActivity
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteIngredientState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.IngredientState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.MealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.viewmodels.MealViewModel
 import timber.log.Timber
@@ -25,6 +28,8 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
     private lateinit var binding : FragmentDetailedMealBinding
 
     private val mealViewModel: MainContract.MealViewModel by viewModel<MealViewModel>()
+
+    private var calories = 0f
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentDetailedMealBinding.inflate(layoutInflater)
@@ -60,6 +65,14 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
             Timber.e(it.toString())
             renderState(it)
         })
+        mealViewModel.deleteIngredientState.observe(viewLifecycleOwner, Observer {
+            Timber.e(it.toString())
+            renderStateDeleteIngredient(it)
+        })
+        mealViewModel.ingredientState.observe(viewLifecycleOwner, Observer {
+            Timber.e(it.toString())
+            renderStateIngredient(it)
+        })
         if (!isSavedMeal) {
             mealViewModel.getAllByName(meal.strMeal)
             mealViewModel.fetchAllByName(meal.strMeal)
@@ -74,6 +87,7 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
             is MealState.Success -> {
                 showLoadingState(false)
                 meal = state.meals[0]
+                mealViewModel.deleteAllIngredients()
                 fillData(meal)
             }
             is MealState.Error -> {
@@ -85,6 +99,109 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
                 Toast.makeText(context, "Fresh data fetched from the server", Toast.LENGTH_LONG).show()
             }
             is MealState.Loading -> {
+                showLoadingState(true)
+            }
+        }
+    }
+
+    private fun renderStateDeleteIngredient(state: DeleteIngredientState) {
+        when (state) {
+            is DeleteIngredientState.Success -> {
+                showLoadingState(true)
+                mealViewModel.getAllIngredients()
+
+                var ingredients: MutableList<String?> = mutableListOf()
+                var measures: MutableList<String?> = mutableListOf()
+
+                var allIngredientsToSubmit = ""
+
+                ingredients.addAll(
+                    listOf(
+                        meal.strIngredient1,
+                        meal.strIngredient2,
+                        meal.strIngredient3,
+                        meal.strIngredient4,
+                        meal.strIngredient5,
+                        meal.strIngredient6,
+                        meal.strIngredient7,
+                        meal.strIngredient8,
+                        meal.strIngredient9,
+                        meal.strIngredient10,
+                        meal.strIngredient11,
+                        meal.strIngredient12,
+                        meal.strIngredient13,
+                        meal.strIngredient14,
+                        meal.strIngredient15,
+                        meal.strIngredient16,
+                        meal.strIngredient17,
+                        meal.strIngredient18,
+                        meal.strIngredient19,
+                        meal.strIngredient20
+                    )
+                )
+
+                measures.addAll(
+                    listOf(
+                        meal.strMeasure1,
+                        meal.strMeasure2,
+                        meal.strMeasure3,
+                        meal.strMeasure4,
+                        meal.strMeasure5,
+                        meal.strMeasure6,
+                        meal.strMeasure7,
+                        meal.strMeasure8,
+                        meal.strMeasure9,
+                        meal.strMeasure10,
+                        meal.strMeasure11,
+                        meal.strMeasure12,
+                        meal.strMeasure13,
+                        meal.strMeasure14,
+                        meal.strMeasure15,
+                        meal.strMeasure16,
+                        meal.strMeasure17,
+                        meal.strMeasure18,
+                        meal.strMeasure19,
+                        meal.strMeasure20
+                    )
+                )
+
+                for (i in 0..19) {
+                    if (ingredients[i] == null || measures[i] == null || ingredients[i] == "" || measures[i] == "") break
+                    allIngredientsToSubmit =
+                        allIngredientsToSubmit + " " + measures[i] + " " + ingredients[i]?.replace(
+                            "-",
+                            " "
+                        )
+                }
+
+                mealViewModel.fetchAllIngredientsByName(allIngredientsToSubmit, 0)
+            }
+            is DeleteIngredientState.Error -> {
+                showLoadingState(false)
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+            }
+
+        }
+    }
+
+    private fun renderStateIngredient(state: IngredientState) {
+        when (state) {
+            is IngredientState.Success -> {
+                if (state.ingredients.isNotEmpty()) {
+                    calories = 0f
+                    for (ingredient in state.ingredients){
+                        calories += ingredient.calories
+                    }
+                    binding.detailedMealCalories.text = calories.toString() + " kcal"
+                }
+            }
+            is IngredientState.Error -> {
+                showLoadingState(false)
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+            }
+            is IngredientState.DataFetched -> {
+                showLoadingState(false) }
+            is IngredientState.Loading -> {
                 showLoadingState(true)
             }
         }
@@ -170,7 +287,7 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
             data.strMeasure20
         ))
 
-        for (i in 1..19){
+        for (i in 0..19){
             if (ingredients[i] == null){
                 if (i == 1)ingredientsMeasures += getString(R.string.data_not_available)
                 break

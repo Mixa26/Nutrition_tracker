@@ -14,7 +14,7 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.dat
 abstract class CalorieMealDao {
 
     @Insert( onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertAll(meals: List<CalorieMealEntity>): List<Long>
+    abstract fun insertAll(meals: List<CalorieMealEntity>): Completable
 
     @Query("SELECT * FROM caloriemeals")
     abstract fun getAll(): Observable<List<CalorieMealEntity>>

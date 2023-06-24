@@ -11,7 +11,7 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.dat
 
 @Dao
 abstract class CalorieIngredientDao {
-    @Insert( onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     abstract fun insertAll(meals: List<CalorieIngredientEntity>): Completable
 
     @Query("SELECT * FROM calorieingredients")

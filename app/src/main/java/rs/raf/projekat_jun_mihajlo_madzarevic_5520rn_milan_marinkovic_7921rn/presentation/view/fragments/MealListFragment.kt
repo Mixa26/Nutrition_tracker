@@ -98,11 +98,8 @@ class MealListFragment(private val category: String?) : Fragment() {
         binding.searchMealList.doAfterTextChanged {
             val filter = it.toString()
             if (filter.isEmpty()){
-                if (mealsPerPage < allMeals.size) {
-                    mealAdapter.submitList(allMeals.subList(0, mealsPerPage))
-                }
-                else{
-                    mealAdapter.submitList(allMeals.subList(0, allMeals.size))
+                if (category != null) {
+                    mealViewModel.fetchAllByCategory(category)
                 }
             }
             else{
@@ -343,12 +340,17 @@ class MealListFragment(private val category: String?) : Fragment() {
             is IngredientState.Success -> {
                 if (state.ingredients.isNotEmpty())
                 {
+                    var ignorePos = mutableListOf<Int>()
                     for (i in 0 until allMealsFull.size){
-                        allMealsFull[i].calorie = 0f
+                        if (allMealsFull[i].calorie != 0f){
+                            ignorePos.add(i)
+                        }
                     }
 
                     for (ingredient in state.ingredients) {
-                        allMealsFull[ingredient.mealPos].calorie += ingredient.calories
+                        if (!ignorePos.contains(ingredient.mealPos)) {
+                            allMealsFull[ingredient.mealPos].calorie += ingredient.calories
+                        }
                     }
 
                     var allMealsCopy = mutableListOf<MealEntity>()

@@ -22,7 +22,7 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.dat
                SavedMealEntity::class,
                CalorieMealEntity::class,
                CalorieIngredientEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = false)
 abstract class NutritionDatabase : RoomDatabase() {
     abstract fun getUserDao(): UserDao

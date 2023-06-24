@@ -31,6 +31,7 @@ class MealRepositoryImpl (
                 val entities = it.map{
                     CalorieIngredientEntity(
                         mealPos,
+                        0,
                         it.name,
                         it.calories,
                         it.serving_size_g,
@@ -124,7 +125,7 @@ class MealRepositoryImpl (
                         it.dateModified,
                         )
                 }
-                val list = calorieLocalDataSource.insertAll(entities)
+                calorieLocalDataSource.insertAll(entities).blockingAwait()
             }
             .map {
                 Resource.Success(Unit)
@@ -143,7 +144,7 @@ class MealRepositoryImpl (
         return remoteDataSource
             .getAllByName(name)
             .doOnNext{
-                if (it != null) {
+                if (it != null && it.meals != null) {
                     val entities = it.meals.map {
                         MealEntity(
                             it.idMeal,
@@ -746,7 +747,7 @@ class MealRepositoryImpl (
                         it.dateModified,
                     )
                 }
-                localDataSource.insertAll(entities)
+                localDataSource.insertAll(entities).blockingAwait()
             }
             .map {
                 Resource.Success(Unit)
