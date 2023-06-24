@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "caloriemeals")
 data class CalorieMealEntity (
-    var calorie: Float?,
+    var calorie: Float,
     val datePlaned: Long?,
     val mealType: String?,
     @PrimaryKey(autoGenerate = true)

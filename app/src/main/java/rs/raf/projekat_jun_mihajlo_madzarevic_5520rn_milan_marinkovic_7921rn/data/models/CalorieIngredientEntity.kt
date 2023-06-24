@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "calorieingredients")
 data class CalorieIngredientEntity (
+    val mealPos: Int,
     @PrimaryKey(autoGenerate = false)
     val name: String,
     val calories: Float,

@@ -1,12 +1,10 @@
 package rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.fragments
 
 import android.app.AlertDialog
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -16,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.CalorieIngredientEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.CalorieMealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.MealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.R
@@ -28,6 +25,7 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.pre
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.recycler.differ.MealDiffItemCallback
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.CalorieMealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteCalorieMealState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteIngredientState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.IngredientState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.MealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.viewmodels.MealViewModel
@@ -43,7 +41,6 @@ class MealListFragment(private val category: String?) : Fragment() {
 
     private lateinit var allMeals: List<MealEntity>
     var allMealsFull: MutableList<CalorieMealEntity> = mutableListOf()
-    private var allIngredientsFull: MutableList<List<CalorieIngredientEntity>> = mutableListOf()
 
     private var mealsPerPage = 10
     private var currentPage = 0
@@ -165,6 +162,10 @@ class MealListFragment(private val category: String?) : Fragment() {
             Timber.e(it.toString())
             renderStateDeleteCalorie(it)
         })
+        mealViewModel.deleteIngredientState.observe(viewLifecycleOwner, Observer {
+            Timber.e(it.toString())
+            renderStateDeleteIngredient(it)
+        })
         mealViewModel.calorieMealState.observe(viewLifecycleOwner, Observer {
             Timber.e(it.toString())
             renderStateCalorie(it)
@@ -210,13 +211,27 @@ class MealListFragment(private val category: String?) : Fragment() {
     private fun renderStateDeleteCalorie(state: DeleteCalorieMealState) {
         when (state) {
             is DeleteCalorieMealState.Success -> {
+                showLoadingState(true)
+                mealViewModel.deleteAllIngredients()
+            }
+            is DeleteCalorieMealState.Error -> {
                 showLoadingState(false)
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+            }
+
+        }
+    }
+
+    private fun renderStateDeleteIngredient(state: DeleteIngredientState) {
+        when (state) {
+            is DeleteIngredientState.Success -> {
+                showLoadingState(true)
                 mealViewModel.getAllCalorie()
                 for (meal in allMeals){
                     mealViewModel.fetchAllByNameForCalorie(meal.strMeal)
                 }
             }
-            is DeleteCalorieMealState.Error -> {
+            is DeleteIngredientState.Error -> {
                 showLoadingState(false)
                 Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
             }
@@ -236,6 +251,7 @@ class MealListFragment(private val category: String?) : Fragment() {
 
                     mealViewModel.getAllIngredients()
 
+                    var i: Int = 0
                     for (meal in allMealsFull) {
 
                         var ingredients: MutableList<String?> = mutableListOf()
@@ -302,7 +318,8 @@ class MealListFragment(private val category: String?) : Fragment() {
                                 )
                         }
 
-                        mealViewModel.fetchAllIngredientsByName(allIngredientsToSubmit)
+                        mealViewModel.fetchAllIngredientsByName(allIngredientsToSubmit, i)
+                        i++
                     }
                 }
 
@@ -324,22 +341,15 @@ class MealListFragment(private val category: String?) : Fragment() {
     private fun renderStateIngredient(state: IngredientState) {
         when (state) {
             is IngredientState.Success -> {
-                allIngredientsFull.add(state.ingredients)
-                if (allIngredientsFull.size < calorieCounter){
-                    showLoadingState(true)
-                }
-                else {
-                    for (i in 0 until allMealsFull.size) {
-                        var calories = 0f
-
-                        for (ingredient in allIngredientsFull[i]) {
-                            calories += ingredient.calories
-                        }
-
-                        allMealsFull[i].calorie = calories
+                if (state.ingredients.isNotEmpty())
+                {
+                    for (i in 0 until allMealsFull.size){
+                        allMealsFull[i].calorie = 0f
                     }
 
-                    allMealsFull.sortBy { it.calorie }
+                    for (ingredient in state.ingredients) {
+                        allMealsFull[ingredient.mealPos].calorie += ingredient.calories
+                    }
 
                     var allMealsCopy = mutableListOf<MealEntity>()
 
@@ -404,21 +414,7 @@ class MealListFragment(private val category: String?) : Fragment() {
                     }
 
                     for (meal in allMealsFull) {
-                        if (calorieLowBound != -1 && calorieUpperBound != -1) {
-                            if (meal.calorie?.toInt() in calorieLowBound..calorieUpperBound) {
-                                addToMealsCopy(meal)
-                            }
-                        } else if (calorieLowBound != -1) {
-                            if (meal.calorie!! > calorieLowBound) {
-                                addToMealsCopy(meal)
-                            }
-                        } else if (calorieUpperBound != -1) {
-                            if (meal.calorie!! < calorieUpperBound) {
-                                addToMealsCopy(meal)
-                            }
-                        } else {
-                            addToMealsCopy(meal)
-                        }
+                        addToMealsCopy(meal)
                     }
 
                     allMeals = allMealsCopy
@@ -427,7 +423,7 @@ class MealListFragment(private val category: String?) : Fragment() {
                         mealAdapter.submitList(allMeals.subList(0, mealsPerPage))
                         currentPage = 0
                     } else {
-                        mealAdapter.submitList(allMeals.subList(0, allMeals.size))
+                        mealAdapter.submitList(allMeals)
                         currentPage = 0
                     }
                 }
@@ -456,30 +452,123 @@ class MealListFragment(private val category: String?) : Fragment() {
 
         dialogBind.calorieFilterButton.setOnClickListener{
 
-            calorieLowBound = -1
-            calorieUpperBound = -1
-
             calorieCounter = allMeals.size
 
-            if (dialogBind.calorieLowerBond.text.toString() != "") {
-                try {
-                    calorieLowBound = dialogBind.calorieLowerBond.text.toString().toInt()
-                } catch (e: NumberFormatException) {
-                    Toast.makeText(context,R.string.error_string_not_number, Toast.LENGTH_SHORT).show()
-                }
-            }
-            if (dialogBind.calorieUpperBond.text.toString() != "") {
-                try {
-                    calorieUpperBound = dialogBind.calorieUpperBond.text.toString().toInt()
-                } catch (e: NumberFormatException) {
-                    Toast.makeText(context,R.string.error_string_not_number, Toast.LENGTH_SHORT).show()
-                }
-            }
-
             allMealsFull.clear()
-            allIngredientsFull.clear()
             mealViewModel.deleteAllCalorie()
 
+            dialog.dismiss()
+        }
+
+        dialogBind.calorieSortButton.setOnClickListener{
+
+            if (!allMealsFull.isEmpty()) {
+
+                calorieLowBound = -1
+                calorieUpperBound = -1
+
+                if (dialogBind.calorieLowerBond.text.toString() != "") {
+                    try {
+                        calorieLowBound = dialogBind.calorieLowerBond.text.toString().toInt()
+                    } catch (e: NumberFormatException) {
+                        Toast.makeText(context,R.string.error_string_not_number, Toast.LENGTH_SHORT).show()
+                    }
+                }
+                if (dialogBind.calorieUpperBond.text.toString() != "") {
+                    try {
+                        calorieUpperBound = dialogBind.calorieUpperBond.text.toString().toInt()
+                    } catch (e: NumberFormatException) {
+                        Toast.makeText(context,R.string.error_string_not_number, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                allMealsFull.sortBy { it.calorie }
+                var allMealsCopy = mutableListOf<MealEntity>()
+
+                fun addToMealsCopy(meal: CalorieMealEntity) {
+                    allMealsCopy.add(
+                        MealEntity(
+                            "kcal " + meal.calorie,
+                            meal.strMeal,
+                            meal.strDrinkAlternate,
+                            meal.strCategory,
+                            meal.strArea,
+                            meal.strInstructions,
+                            meal.strMealThumb,
+                            meal.strTags,
+                            meal.strYoutube,
+                            meal.strIngredient1,
+                            meal.strIngredient2,
+                            meal.strIngredient3,
+                            meal.strIngredient4,
+                            meal.strIngredient5,
+                            meal.strIngredient6,
+                            meal.strIngredient7,
+                            meal.strIngredient8,
+                            meal.strIngredient9,
+                            meal.strIngredient10,
+                            meal.strIngredient11,
+                            meal.strIngredient12,
+                            meal.strIngredient13,
+                            meal.strIngredient14,
+                            meal.strIngredient15,
+                            meal.strIngredient16,
+                            meal.strIngredient17,
+                            meal.strIngredient18,
+                            meal.strIngredient19,
+                            meal.strIngredient20,
+                            meal.strMeasure1,
+                            meal.strMeasure2,
+                            meal.strMeasure3,
+                            meal.strMeasure4,
+                            meal.strMeasure5,
+                            meal.strMeasure6,
+                            meal.strMeasure7,
+                            meal.strMeasure8,
+                            meal.strMeasure9,
+                            meal.strMeasure10,
+                            meal.strMeasure11,
+                            meal.strMeasure12,
+                            meal.strMeasure13,
+                            meal.strMeasure14,
+                            meal.strMeasure15,
+                            meal.strMeasure16,
+                            meal.strMeasure17,
+                            meal.strMeasure18,
+                            meal.strMeasure19,
+                            meal.strMeasure20,
+                            meal.strSource,
+                            meal.strImageSource,
+                            meal.strCreativeCommonsConfirmed,
+                            meal.dateModified
+                        )
+                    )
+                }
+
+                for (meal in allMealsFull){
+                    if (calorieLowBound != -1 && calorieUpperBound != -1) {
+                        if (meal.calorie.toInt() in calorieLowBound..calorieUpperBound) {
+                            addToMealsCopy(meal)
+                        }
+                    } else if (calorieLowBound != -1) {
+                        if (meal.calorie > calorieLowBound) {
+                            addToMealsCopy(meal)
+                        }
+                    } else if (calorieUpperBound != -1) {
+                        if (meal.calorie < calorieUpperBound) {
+                            addToMealsCopy(meal)
+                        }
+                    } else {
+                        addToMealsCopy(meal)
+                    }
+                }
+
+                allMeals = allMealsCopy
+                mealAdapter.submitList(allMeals)
+            }
+            else{
+                Toast.makeText(context, getString(R.string.error_no_kcal_list), Toast.LENGTH_LONG).show()
+            }
             dialog.dismiss()
         }
 
@@ -487,8 +576,17 @@ class MealListFragment(private val category: String?) : Fragment() {
     }
 
     private fun showLoadingState(loading: Boolean) {
-        binding.searchMealList.isVisible = !loading
+        if (binding.mealListTabLayout.selectedTabPosition == 0) {
+            binding.searchMealList.isVisible = !loading
+        }
+        else{
+            binding.searchMealList.isVisible = false
+        }
         binding.mealsRV.isVisible = !loading
+        binding.mealForwardPagination.isVisible = !loading
+        binding.mealBackwardPagination.isVisible = !loading
+        binding.mealStatisticsButton.isVisible = !loading
+        binding.mealCaloriesButton.isVisible = !loading
         binding.loadingMeals.isVisible = loading
     }
 }

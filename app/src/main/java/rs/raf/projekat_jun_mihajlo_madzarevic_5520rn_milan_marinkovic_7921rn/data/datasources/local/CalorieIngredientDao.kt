@@ -18,7 +18,7 @@ abstract class CalorieIngredientDao {
     abstract fun getAll(): Observable<List<CalorieIngredientEntity>>
 
     @Query("DELETE FROM calorieingredients")
-    abstract fun deleteAll()
+    abstract fun deleteAll(): Completable
 
     @Transaction
     open fun deleteAndInsertAll(entities: List<CalorieIngredientEntity>) {

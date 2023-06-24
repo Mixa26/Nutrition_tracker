@@ -24,12 +24,13 @@ class MealRepositoryImpl (
     private val ninjaRemoteDataSource: NinjaMealService
 ) : MealRepository {
 
-    override fun fetchAllIngredientsByName(name: String): Observable<Resource<Unit>> {
+    override fun fetchAllIngredientsByName(name: String, mealPos: Int): Observable<Resource<Unit>> {
         return ninjaRemoteDataSource
             .getAllByTitle(name)
             .doOnNext{
                 val entities = it.map{
                     CalorieIngredientEntity(
+                        mealPos,
                         it.name,
                         it.calories,
                         it.serving_size_g,
@@ -44,7 +45,7 @@ class MealRepositoryImpl (
                         it.sugar_g
                     )
                 }
-                calorieIngredientLocalDataSource.deleteAndInsertAll(entities)
+                calorieIngredientLocalDataSource.insertAll(entities).blockingAwait()
             }
             .map {
                 Resource.Success(Unit)
@@ -53,7 +54,10 @@ class MealRepositoryImpl (
 
     override fun getAllIngredients(): Observable<List<CalorieIngredientEntity>> {
         return calorieIngredientLocalDataSource.getAll()
+    }
 
+    override fun deleteAllIngredients(): Completable {
+        return calorieIngredientLocalDataSource.deleteAll()
     }
 
     override fun fetchAllByNameForCalorie(name: String): Observable<Resource<Unit>> {
@@ -62,7 +66,7 @@ class MealRepositoryImpl (
             .doOnNext{
                 val entities = it.meals.map{
                     CalorieMealEntity(
-                        null,
+                        0f,
                         null,
                         null,
                         it.idMeal.toInt(),
@@ -121,7 +125,6 @@ class MealRepositoryImpl (
                         )
                 }
                 val list = calorieLocalDataSource.insertAll(entities)
-                Timber.e("INSIDE OF FETCH BEFORE INSERT " + entities[0].strMeal)
             }
             .map {
                 Resource.Success(Unit)
@@ -140,65 +143,70 @@ class MealRepositoryImpl (
         return remoteDataSource
             .getAllByName(name)
             .doOnNext{
-                val entities = it.meals.map{
-                    MealEntity(
-                        it.idMeal,
-                        it.strMeal,
-                        it.strDrinkAlternate,
-                        it.strCategory,
-                        it.strArea,
-                        it.strInstructions,
-                        it.strMealThumb,
-                        it.strTags,
-                        it.strYoutube,
-                        it.strIngredient1,
-                        it.strIngredient2,
-                        it.strIngredient3,
-                        it.strIngredient4,
-                        it.strIngredient5,
-                        it.strIngredient6,
-                        it.strIngredient7,
-                        it.strIngredient8,
-                        it.strIngredient9,
-                        it.strIngredient10,
-                        it.strIngredient11,
-                        it.strIngredient12,
-                        it.strIngredient13,
-                        it.strIngredient14,
-                        it.strIngredient15,
-                        it.strIngredient16,
-                        it.strIngredient17,
-                        it.strIngredient18,
-                        it.strIngredient19,
-                        it.strIngredient20,
-                        it.strMeasure1,
-                        it.strMeasure2,
-                        it.strMeasure3,
-                        it.strMeasure4,
-                        it.strMeasure5,
-                        it.strMeasure6,
-                        it.strMeasure7,
-                        it.strMeasure8,
-                        it.strMeasure9,
-                        it.strMeasure10,
-                        it.strMeasure11,
-                        it.strMeasure12,
-                        it.strMeasure13,
-                        it.strMeasure14,
-                        it.strMeasure15,
-                        it.strMeasure16,
-                        it.strMeasure17,
-                        it.strMeasure18,
-                        it.strMeasure19,
-                        it.strMeasure20,
-                        it.strSource,
-                        it.strImageSource,
-                        it.strCreativeCommonsConfirmed,
-                        it.dateModified,
+                if (it != null) {
+                    val entities = it.meals.map {
+                        MealEntity(
+                            it.idMeal,
+                            it.strMeal,
+                            it.strDrinkAlternate,
+                            it.strCategory,
+                            it.strArea,
+                            it.strInstructions,
+                            it.strMealThumb,
+                            it.strTags,
+                            it.strYoutube,
+                            it.strIngredient1,
+                            it.strIngredient2,
+                            it.strIngredient3,
+                            it.strIngredient4,
+                            it.strIngredient5,
+                            it.strIngredient6,
+                            it.strIngredient7,
+                            it.strIngredient8,
+                            it.strIngredient9,
+                            it.strIngredient10,
+                            it.strIngredient11,
+                            it.strIngredient12,
+                            it.strIngredient13,
+                            it.strIngredient14,
+                            it.strIngredient15,
+                            it.strIngredient16,
+                            it.strIngredient17,
+                            it.strIngredient18,
+                            it.strIngredient19,
+                            it.strIngredient20,
+                            it.strMeasure1,
+                            it.strMeasure2,
+                            it.strMeasure3,
+                            it.strMeasure4,
+                            it.strMeasure5,
+                            it.strMeasure6,
+                            it.strMeasure7,
+                            it.strMeasure8,
+                            it.strMeasure9,
+                            it.strMeasure10,
+                            it.strMeasure11,
+                            it.strMeasure12,
+                            it.strMeasure13,
+                            it.strMeasure14,
+                            it.strMeasure15,
+                            it.strMeasure16,
+                            it.strMeasure17,
+                            it.strMeasure18,
+                            it.strMeasure19,
+                            it.strMeasure20,
+                            it.strSource,
+                            it.strImageSource,
+                            it.strCreativeCommonsConfirmed,
+                            it.dateModified,
 
-                    )
+                            )
+                    }
+                    localDataSource.deleteAndInsertAll(entities)
                 }
-                localDataSource.deleteAndInsertAll(entities)
+                else{
+                    localDataSource.deleteAndInsertAll(listOf())
+                }
             }
             .map {
                 Resource.Success(Unit)

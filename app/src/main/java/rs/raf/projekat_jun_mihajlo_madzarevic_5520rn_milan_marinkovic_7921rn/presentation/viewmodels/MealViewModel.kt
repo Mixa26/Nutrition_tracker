@@ -15,6 +15,7 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.pre
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.AddMealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.CalorieMealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteCalorieMealState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteIngredientState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.IngredientState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.MealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.SavedMealState
@@ -32,6 +33,7 @@ class MealViewModel (
     override val savedMealOriginalState: MutableLiveData<SavedMealState> = MutableLiveData()
     override val addMeal: MutableLiveData<AddMealState> = MutableLiveData()
     override val deleteCalorieMealState: MutableLiveData<DeleteCalorieMealState> = MutableLiveData()
+    override val deleteIngredientState: MutableLiveData<DeleteIngredientState> = MutableLiveData()
     override val calorieMealState: MutableLiveData<CalorieMealState> = MutableLiveData()
     override val ingredientState: MutableLiveData<IngredientState> = MutableLiveData()
 
@@ -69,9 +71,9 @@ class MealViewModel (
         publishSubject.onNext(name)
     }
 
-    override fun fetchAllIngredientsByName(name: String) {
+    override fun fetchAllIngredientsByName(name: String, mealPos: Int) {
         val subscription = mealRepository
-            .fetchAllIngredientsByName(name)
+            .fetchAllIngredientsByName(name, mealPos)
             .startWith(Resource.Loading())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -103,6 +105,22 @@ class MealViewModel (
                 {
                     ingredientState.value = IngredientState.Error("Error happened while fetching data from db")
                     Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
+    override fun deleteAllIngredients() {
+        val subscription = mealRepository
+            .deleteAllIngredients()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    deleteIngredientState.value = DeleteIngredientState.Success
+                },
+                {
+                    deleteIngredientState.value = DeleteIngredientState.Error("Error happened while fetching data from db")
                 }
             )
         subscriptions.add(subscription)

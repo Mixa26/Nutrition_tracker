@@ -10,9 +10,11 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.dat
 
 interface MealRepository {
 
-    fun fetchAllIngredientsByName(name: String): Observable<Resource<Unit>>
+    fun fetchAllIngredientsByName(name: String, mealPos: Int): Observable<Resource<Unit>>
 
     fun getAllIngredients(): Observable<List<CalorieIngredientEntity>>
+
+    fun deleteAllIngredients(): Completable
     fun fetchAllByNameForCalorie(name: String): Observable<Resource<Unit>>
 
     fun getAllCalorie(): Observable<List<CalorieMealEntity>>
