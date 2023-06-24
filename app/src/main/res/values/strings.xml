@@ -9,6 +9,9 @@
     <string name="mealsInCategory">Meals in</string>
     <string name="data_fetched">Fresh data fetched from the server</string>
     <string name="save_meal">Save meal</string>
+    <string name="update_meal">Update meal</string>
+    <string name="delete_meal">Delete meal</string>
+    <string name="edit_meal">Edit meal</string>
     <string name="data_not_available">Data not available</string>
     <string name="detailedMealCategory">Category: </string>
     <string name="detailedMealArea">Area: </string>
@@ -25,6 +28,7 @@
     <string name="apiMeals">All Meals</string>
     <string name="savedMeals">Saved Meals</string>
     <string name="mealAdded">Meal successfully added</string>
+    <string name="mealUpdated">Meal successfully updated</string>
     <string name="mealStatisticTitle">Meals added in the past 7 days</string>
     <string name="statistics">Statistics</string>
     <string name="savedCaloriesStatistics">Saved Calories</string>
@@ -39,4 +43,16 @@
     <string name="error_no_kcal_list">Calories have to be fetched first!</string>
     <string name="bodyDailyCalorie">Body calorie calculator</string>
     <string name="missingIngredients">Some ingredients couldnt be counted in the calories!</string>
+    <string name="calorieCalculatorAge">Age</string>
+    <string name="calorieCalculatorHeight">Height in cm</string>
+    <string name="calorieCalculatorWeight">Weight in kg</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="inactive">Inactive</string>
+    <string name="mediumActive">Medium active</string>
+    <string name="highlyActive">Highly active</string>
+    <string name="submit">Submit</string>
+    <string name="calorieCalculator">Calorie calculator</string>
+    <string name="error_whole_numbers">Inputs for age,height,weight must be whole numbers!</string>
+    <string name="yourDailyIntake">Your daily intake should be</string>
 </resources>

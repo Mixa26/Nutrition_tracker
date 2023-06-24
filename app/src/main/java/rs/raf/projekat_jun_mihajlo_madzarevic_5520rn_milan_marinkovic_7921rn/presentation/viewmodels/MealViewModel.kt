@@ -16,9 +16,11 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.pre
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.CalorieMealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteCalorieMealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteIngredientState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteSavedMealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.IngredientState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.MealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.SavedMealState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.UpdateSavedMealState
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -32,8 +34,10 @@ class MealViewModel (
     override val mealState: MutableLiveData<MealState> = MutableLiveData()
     override val savedMealOriginalState: MutableLiveData<SavedMealState> = MutableLiveData()
     override val addMeal: MutableLiveData<AddMealState> = MutableLiveData()
+    override val updateSavedMealState: MutableLiveData<UpdateSavedMealState> = MutableLiveData()
     override val deleteCalorieMealState: MutableLiveData<DeleteCalorieMealState> = MutableLiveData()
     override val deleteIngredientState: MutableLiveData<DeleteIngredientState> = MutableLiveData()
+    override val deleteSavedMealState: MutableLiveData<DeleteSavedMealState> = MutableLiveData()
     override val calorieMealState: MutableLiveData<CalorieMealState> = MutableLiveData()
     override val ingredientState: MutableLiveData<IngredientState> = MutableLiveData()
 
@@ -361,6 +365,40 @@ class MealViewModel (
         subscriptions.add(subscription)
     }
 
+    override fun updateSavedMeal(meal: SavedMealEntity) {
+        val subscription = mealRepository
+            .updateSavedMeal(meal)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    updateSavedMealState.value = UpdateSavedMealState.Success
+                },
+                {
+                    updateSavedMealState.value = UpdateSavedMealState.Error("Error happened while adding movie")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
+    override fun deleteMeal(id: Int) {
+        val subscription = mealRepository
+            .deleteSavedMeal(id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    deleteSavedMealState.value = DeleteSavedMealState.Success
+                },
+                {
+                    deleteSavedMealState.value = DeleteSavedMealState.Error("Error happened while adding movie")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
     override fun getAllSaved() {
         val subscription = mealRepository
             .getAllSaved()
@@ -398,6 +436,23 @@ class MealViewModel (
     override fun getAllSavedAsMealEntity() {
         val subscription = mealRepository
             .getAllSavedAsMealEntity()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    mealState.value = MealState.Success(it)
+                },
+                {
+                    mealState.value = MealState.Error("Error happened while fetching data from db")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
+    override fun getSavedById(id: Int) {
+        val subscription = mealRepository
+            .getSavedByIdAsMealEntity(id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(

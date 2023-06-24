@@ -33,12 +33,12 @@ class MealAdapter(diffCallback: DiffUtil.ItemCallback<MealEntity>, private val f
         fun bind(meal: MealEntity, fragment : FragmentMealListBinding?){
             itemView.findViewById<TextView>(R.id.mealTitle).text = meal.strMeal
 
-            if (meal.idMeal.startsWith("kcal")){
-                if (meal.idMeal.split(" ")[1].toFloat() == 0f){
+            if (meal.dateModified != null && meal.dateModified.startsWith("kcal")){
+                if (meal.dateModified.split(" ")[1].toFloat() == 0f){
                     itemView.findViewById<TextView>(R.id.mealCalories).text = "kcal unavailable"
                 }
                 else {
-                    itemView.findViewById<TextView>(R.id.mealCalories).text = meal.idMeal
+                    itemView.findViewById<TextView>(R.id.mealCalories).text = meal.dateModified
                 }
             }
 

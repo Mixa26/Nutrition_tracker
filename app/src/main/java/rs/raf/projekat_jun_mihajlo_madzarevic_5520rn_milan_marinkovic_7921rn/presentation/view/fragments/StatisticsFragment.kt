@@ -1,5 +1,6 @@
 package rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.fragments
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.google.android.material.tabs.TabLayout
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.SavedMealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.R
@@ -32,6 +34,7 @@ class StatisticsFragment(private val category: String) : Fragment(){
     private lateinit var binding: FragmentStatisticsBinding
 
     private val mealViewModel: MainContract.MealViewModel by viewModel<MealViewModel>()
+    private val sharedPreferences: SharedPreferences by inject()
 
     private lateinit var allMeals: List<SavedMealEntity>
 
@@ -75,7 +78,7 @@ class StatisticsFragment(private val category: String) : Fragment(){
         })
 
         binding.bodyDailyCalorie.setOnClickListener{
-
+            (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, CalorieCalculatorFragment(category)).commit()
         }
     }
 
@@ -130,11 +133,11 @@ class StatisticsFragment(private val category: String) : Fragment(){
         if (caloriesGraph)label = "Calories added"
         val dataSet = LineDataSet(entries, label)
 
-        if (caloriesGraph){
+        if (caloriesGraph && sharedPreferences.getFloat("kcalDaily", 0f) != 0f){
             var colors = mutableListOf<Int>()
 
             for (i in mealsAdded.size-2 downTo 0  ){
-                if (mealsAdded[i] > 500f){
+                if (mealsAdded[i] > sharedPreferences.getFloat("kcalDaily", 0f)){
                     colors.add(ContextCompat.getColor(requireContext(), R.color.red))
                 }
                 else{

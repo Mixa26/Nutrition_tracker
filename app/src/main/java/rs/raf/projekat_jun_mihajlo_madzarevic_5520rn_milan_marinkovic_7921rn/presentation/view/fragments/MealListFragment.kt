@@ -358,7 +358,7 @@ class MealListFragment(private val category: String?) : Fragment() {
                     fun addToMealsCopy(meal: CalorieMealEntity) {
                         allMealsCopy.add(
                             MealEntity(
-                                "kcal " + meal.calorie,
+                                meal.idMeal.toString(),
                                 meal.strMeal,
                                 meal.strDrinkAlternate,
                                 meal.strCategory,
@@ -410,7 +410,7 @@ class MealListFragment(private val category: String?) : Fragment() {
                                 meal.strSource,
                                 meal.strImageSource,
                                 meal.strCreativeCommonsConfirmed,
-                                meal.dateModified
+                                "kcal " + meal.calorie
                             )
                         )
                     }
@@ -490,7 +490,7 @@ class MealListFragment(private val category: String?) : Fragment() {
                 fun addToMealsCopy(meal: CalorieMealEntity) {
                     allMealsCopy.add(
                         MealEntity(
-                            "kcal " + meal.calorie,
+                            meal.idMeal.toString(),
                             meal.strMeal,
                             meal.strDrinkAlternate,
                             meal.strCategory,
@@ -542,7 +542,7 @@ class MealListFragment(private val category: String?) : Fragment() {
                             meal.strSource,
                             meal.strImageSource,
                             meal.strCreativeCommonsConfirmed,
-                            meal.dateModified
+                            "kcal " + meal.calorie
                         )
                     )
                 }

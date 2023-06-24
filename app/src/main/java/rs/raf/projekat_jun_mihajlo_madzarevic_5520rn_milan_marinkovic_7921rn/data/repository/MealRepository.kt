@@ -31,11 +31,18 @@ interface MealRepository {
 
     fun saveMeal(meal: SavedMealEntity): Completable
 
+    fun updateSavedMeal(meal: SavedMealEntity): Completable
+
+    fun deleteSavedMeal(id: Int): Completable
+
     fun getAllSaved(): Observable<List<SavedMealEntity>>
 
     fun getAllSavedByName(name: String): Observable<List<SavedMealEntity>>
 
     fun getAllSavedAsMealEntity(): Observable<List<MealEntity>>
+
+
+    fun getSavedByIdAsMealEntity(id: Int): Observable<List<MealEntity>>
 
     fun getAllSavedByNameAsMealEntity(name: String): Observable<List<MealEntity>>
 

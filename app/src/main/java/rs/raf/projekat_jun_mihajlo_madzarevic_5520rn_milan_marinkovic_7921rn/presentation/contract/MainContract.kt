@@ -9,9 +9,11 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.pre
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.CategoryState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteCalorieMealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteIngredientState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteSavedMealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.IngredientState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.MealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.SavedMealState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.UpdateSavedMealState
 
 interface MainContract {
     interface UserViewModel {
@@ -37,9 +39,13 @@ interface MainContract {
 
         val addMeal: LiveData<AddMealState>
 
+        val updateSavedMealState: LiveData<UpdateSavedMealState>
+
         val deleteCalorieMealState: LiveData<DeleteCalorieMealState>
 
         val deleteIngredientState: LiveData<DeleteIngredientState>
+
+        val deleteSavedMealState: LiveData<DeleteSavedMealState>
 
         val ingredientState: LiveData<IngredientState>
 
@@ -74,11 +80,17 @@ interface MainContract {
 
         fun saveMeal(meal: SavedMealEntity)
 
+        fun updateSavedMeal(meal: SavedMealEntity)
+
+        fun deleteMeal(id: Int)
+
         fun getAllSaved()
 
 //        fun getAllSavedByName(name: String)
 
         fun getAllSavedAsMealEntity()
+
+        fun getSavedById(id: Int)
 
         fun getAllSavedByNameAsMealEntity(name: String)
     }

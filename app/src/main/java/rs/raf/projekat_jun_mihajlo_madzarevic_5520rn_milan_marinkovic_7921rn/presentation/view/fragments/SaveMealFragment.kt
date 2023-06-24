@@ -28,13 +28,14 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.pre
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.activities.MainActivity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.AddMealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.MealState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.UpdateSavedMealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.viewmodels.MealViewModel
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Calendar
 
-class SaveMealFragment(private val meal: MealEntity, private val calories: Float) : Fragment() {
+class SaveMealFragment(private val meal: MealEntity, private val updateMeal: Boolean, private val calories: Float) : Fragment() {
     private lateinit var binding : FragmentSaveMealBinding
 
     private val mealViewModel: MainContract.MealViewModel by viewModel<MealViewModel>()
@@ -59,6 +60,9 @@ class SaveMealFragment(private val meal: MealEntity, private val calories: Float
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentSaveMealBinding.inflate(layoutInflater)
         activity?.title = getString(R.string.saveMeal) + " " + meal.strMeal
+        if (updateMeal) {
+            binding.saveMealSaveButton.text = getString(R.string.update_meal)
+        }
 
         return binding.root
     }
@@ -98,66 +102,129 @@ class SaveMealFragment(private val meal: MealEntity, private val calories: Float
             if (imgFile != "") imgPath = imgFile
 
             if (meal.strCategory != null) {
-                mealViewModel.saveMeal(
-                    SavedMealEntity(
-                        calories,
-                        dateSelected,
-                        requireActivity().findViewById<RadioButton>(binding.radioGroup.checkedRadioButtonId).text.toString(),
-                        0,
-                        meal.strMeal,
-                        meal.strDrinkAlternate,
-                        meal.strCategory,
-                        meal.strArea,
-                        meal.strInstructions,
-                        imgPath,
-                        meal.strTags,
-                        meal.strYoutube,
-                        meal.strIngredient1,
-                        meal.strIngredient2,
-                        meal.strIngredient3,
-                        meal.strIngredient4,
-                        meal.strIngredient5,
-                        meal.strIngredient6,
-                        meal.strIngredient7,
-                        meal.strIngredient8,
-                        meal.strIngredient9,
-                        meal.strIngredient10,
-                        meal.strIngredient11,
-                        meal.strIngredient12,
-                        meal.strIngredient13,
-                        meal.strIngredient14,
-                        meal.strIngredient15,
-                        meal.strIngredient16,
-                        meal.strIngredient17,
-                        meal.strIngredient18,
-                        meal.strIngredient19,
-                        meal.strIngredient20,
-                        meal.strMeasure1,
-                        meal.strMeasure2,
-                        meal.strMeasure3,
-                        meal.strMeasure4,
-                        meal.strMeasure5,
-                        meal.strMeasure6,
-                        meal.strMeasure7,
-                        meal.strMeasure8,
-                        meal.strMeasure9,
-                        meal.strMeasure10,
-                        meal.strMeasure11,
-                        meal.strMeasure12,
-                        meal.strMeasure13,
-                        meal.strMeasure14,
-                        meal.strMeasure15,
-                        meal.strMeasure16,
-                        meal.strMeasure17,
-                        meal.strMeasure18,
-                        meal.strMeasure19,
-                        meal.strMeasure20,
-                        meal.strSource,
-                        meal.strImageSource,
-                        meal.strCreativeCommonsConfirmed,
-                        meal.dateModified
+                if (!updateMeal) {
+                    mealViewModel.saveMeal(
+                        SavedMealEntity(
+                            calories,
+                            dateSelected,
+                            requireActivity().findViewById<RadioButton>(binding.radioGroup.checkedRadioButtonId).text.toString(),
+                            0,
+                            meal.strMeal,
+                            meal.strDrinkAlternate,
+                            meal.strCategory,
+                            meal.strArea,
+                            meal.strInstructions,
+                            imgPath,
+                            meal.strTags,
+                            meal.strYoutube,
+                            meal.strIngredient1,
+                            meal.strIngredient2,
+                            meal.strIngredient3,
+                            meal.strIngredient4,
+                            meal.strIngredient5,
+                            meal.strIngredient6,
+                            meal.strIngredient7,
+                            meal.strIngredient8,
+                            meal.strIngredient9,
+                            meal.strIngredient10,
+                            meal.strIngredient11,
+                            meal.strIngredient12,
+                            meal.strIngredient13,
+                            meal.strIngredient14,
+                            meal.strIngredient15,
+                            meal.strIngredient16,
+                            meal.strIngredient17,
+                            meal.strIngredient18,
+                            meal.strIngredient19,
+                            meal.strIngredient20,
+                            meal.strMeasure1,
+                            meal.strMeasure2,
+                            meal.strMeasure3,
+                            meal.strMeasure4,
+                            meal.strMeasure5,
+                            meal.strMeasure6,
+                            meal.strMeasure7,
+                            meal.strMeasure8,
+                            meal.strMeasure9,
+                            meal.strMeasure10,
+                            meal.strMeasure11,
+                            meal.strMeasure12,
+                            meal.strMeasure13,
+                            meal.strMeasure14,
+                            meal.strMeasure15,
+                            meal.strMeasure16,
+                            meal.strMeasure17,
+                            meal.strMeasure18,
+                            meal.strMeasure19,
+                            meal.strMeasure20,
+                            meal.strSource,
+                            meal.strImageSource,
+                            meal.strCreativeCommonsConfirmed,
+                            meal.dateModified
+                        )
                     )
-                )
+                } else {
+                    mealViewModel.updateSavedMeal(
+                        SavedMealEntity(
+                            calories,
+                            dateSelected,
+                            requireActivity().findViewById<RadioButton>(binding.radioGroup.checkedRadioButtonId).text.toString(),
+                            0,
+                            meal.strMeal,
+                            meal.strDrinkAlternate,
+                            meal.strCategory,
+                            meal.strArea,
+                            meal.strInstructions,
+                            imgPath,
+                            meal.strTags,
+                            meal.strYoutube,
+                            meal.strIngredient1,
+                            meal.strIngredient2,
+                            meal.strIngredient3,
+                            meal.strIngredient4,
+                            meal.strIngredient5,
+                            meal.strIngredient6,
+                            meal.strIngredient7,
+                            meal.strIngredient8,
+                            meal.strIngredient9,
+                            meal.strIngredient10,
+                            meal.strIngredient11,
+                            meal.strIngredient12,
+                            meal.strIngredient13,
+                            meal.strIngredient14,
+                            meal.strIngredient15,
+                            meal.strIngredient16,
+                            meal.strIngredient17,
+                            meal.strIngredient18,
+                            meal.strIngredient19,
+                            meal.strIngredient20,
+                            meal.strMeasure1,
+                            meal.strMeasure2,
+                            meal.strMeasure3,
+                            meal.strMeasure4,
+                            meal.strMeasure5,
+                            meal.strMeasure6,
+                            meal.strMeasure7,
+                            meal.strMeasure8,
+                            meal.strMeasure9,
+                            meal.strMeasure10,
+                            meal.strMeasure11,
+                            meal.strMeasure12,
+                            meal.strMeasure13,
+                            meal.strMeasure14,
+                            meal.strMeasure15,
+                            meal.strMeasure16,
+                            meal.strMeasure17,
+                            meal.strMeasure18,
+                            meal.strMeasure19,
+                            meal.strMeasure20,
+                            meal.strSource,
+                            meal.strImageSource,
+                            meal.strCreativeCommonsConfirmed,
+                            meal.dateModified
+                        )
+                    )
+                }
             }
         }
     }
@@ -166,6 +233,10 @@ class SaveMealFragment(private val meal: MealEntity, private val calories: Float
         mealViewModel.addMeal.observe(viewLifecycleOwner) {
             Timber.e(it.toString())
             renderState(it)
+        }
+        mealViewModel.updateSavedMealState.observe(viewLifecycleOwner) {
+            Timber.e(it.toString())
+            renderStateUpdate(it)
         }
     }
 
@@ -176,6 +247,19 @@ class SaveMealFragment(private val meal: MealEntity, private val calories: Float
                 (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, DetailedMealFragment(meal, false)).commit()
             }
             is AddMealState.Error -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+            }
+
+        }
+    }
+
+    private fun renderStateUpdate(state: UpdateSavedMealState) {
+        when (state) {
+            is UpdateSavedMealState.Success -> {
+                Toast.makeText(context, R.string.mealUpdated, Toast.LENGTH_SHORT).show()
+                (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, DetailedMealFragment(meal, true)).commit()
+            }
+            is UpdateSavedMealState.Error -> {
                 Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
             }
 

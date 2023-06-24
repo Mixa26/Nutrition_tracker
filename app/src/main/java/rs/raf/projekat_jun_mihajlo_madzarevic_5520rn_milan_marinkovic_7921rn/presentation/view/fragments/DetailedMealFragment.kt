@@ -18,6 +18,7 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.pre
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.databinding.FragmentDetailedMealBinding
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.activities.MainActivity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteIngredientState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteSavedMealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.IngredientState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.MealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.viewmodels.MealViewModel
@@ -58,9 +59,16 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
 
         binding.detailedMealSaveMealButton.setOnClickListener{
             Toast.makeText(context, getString(R.string.missingIngredients), Toast.LENGTH_LONG).show()
-            (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, SaveMealFragment(meal, calories)).commit()
+            (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, SaveMealFragment(meal, false, calories)).commit()
         }
 
+        binding.deleteSavedMealButton.setOnClickListener{
+            mealViewModel.deleteMeal(meal.idMeal.toInt())
+        }
+
+        binding.editSavedMealButton.setOnClickListener{
+            (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, SaveMealFragment(meal, true, calories)).commit()
+        }
     }
 
     private fun initObservers(){
@@ -72,6 +80,10 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
             Timber.e(it.toString())
             renderStateDeleteIngredient(it)
         })
+        mealViewModel.deleteSavedMealState.observe(viewLifecycleOwner, Observer {
+            Timber.e(it.toString())
+            renderStateDeleteSavedMeal(it)
+        })
         mealViewModel.ingredientState.observe(viewLifecycleOwner, Observer {
             Timber.e(it.toString())
             renderStateIngredient(it)
@@ -81,7 +93,7 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
             mealViewModel.fetchAllByName(meal.strMeal)
         }
         else{
-            mealViewModel.getAllSavedByNameAsMealEntity(meal.strMeal)
+            mealViewModel.getSavedById(meal.idMeal.toInt())
         }
     }
 
@@ -91,7 +103,7 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
                 showLoadingState(false)
                 meal = state.meals[0]
                 if (isSavedMeal){
-                    binding.detailedMealCalories.text = "kcal " + meal.idMeal
+                    binding.detailedMealCalories.text = "kcal " + meal.dateModified
                 }
                 else {
                     mealViewModel.deleteAllIngredients()
@@ -188,6 +200,20 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
                 mealViewModel.fetchAllIngredientsByName(allIngredientsToSubmit, 0)
             }
             is DeleteIngredientState.Error -> {
+                showLoadingState(false)
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+            }
+
+        }
+    }
+
+    private fun renderStateDeleteSavedMeal(state: DeleteSavedMealState) {
+        when (state) {
+            is DeleteSavedMealState.Success -> {
+                showLoadingState(false)
+                (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, MealListFragment(meal.strCategory)).commit()
+            }
+            is DeleteSavedMealState.Error -> {
                 showLoadingState(false)
                 Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
             }
@@ -323,9 +349,13 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
         binding.detailedMealAllIngredients.isVisible = !loading
         if (isSavedMeal) {
             binding.detailedMealSaveMealButton.isVisible = false
+            binding.deleteSavedMealButton.isVisible = !loading
+            binding.editSavedMealButton.isVisible = !loading
         }
         else{
             binding.detailedMealSaveMealButton.isVisible = !loading
+            binding.deleteSavedMealButton.isVisible = false
+            binding.editSavedMealButton.isVisible = false
         }
         binding.loadingDetailedMeal.isVisible = loading
     }
