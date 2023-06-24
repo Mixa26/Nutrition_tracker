@@ -78,6 +78,9 @@ class HomeFragment : Fragment() {
         binding.filterBtn.setOnClickListener {
             (requireActivity() as MainActivity).supportFragmentManager.beginTransaction().replace((requireActivity() as MainActivity).binding.fragmentContainer.id , TabMainFragment()).commit()
         }
+        binding.planBtn.setOnClickListener {
+            (requireActivity() as MainActivity).supportFragmentManager.beginTransaction().replace((requireActivity() as MainActivity).binding.fragmentContainer.id , WeeklyPlanFragment()).commit()
+        }
     }
 
     private fun initObservers() {
