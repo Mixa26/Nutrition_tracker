@@ -566,7 +566,13 @@ class MealListFragment(private val category: String?) : Fragment() {
                 }
 
                 allMeals = allMealsCopy
-                mealAdapter.submitList(allMeals)
+                if (allMeals.size > mealsPerPage){
+                    mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
+                }
+                else{
+                    mealAdapter.submitList(allMeals)
+                }
+
             }
             else{
                 Toast.makeText(context, getString(R.string.error_no_kcal_list), Toast.LENGTH_LONG).show()

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.github.mikephil.charting.charts.LineChart
@@ -13,6 +14,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.google.android.material.tabs.TabLayout
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.SavedMealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.R
@@ -30,6 +32,8 @@ class StatisticsFragment(private val category: String) : Fragment(){
     private lateinit var binding: FragmentStatisticsBinding
 
     private val mealViewModel: MainContract.MealViewModel by viewModel<MealViewModel>()
+
+    private lateinit var allMeals: List<SavedMealEntity>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentStatisticsBinding.inflate(layoutInflater)
@@ -52,6 +56,27 @@ class StatisticsFragment(private val category: String) : Fragment(){
         binding.chartBackButton.setOnClickListener{
             (requireActivity() as MainActivity).supportFragmentManager.beginTransaction().replace((requireActivity() as MainActivity).binding.fragmentContainer.id , MealListFragment(category)).commit()
         }
+
+        binding.statisticsTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+
+                when (tab.position) {
+                    0 -> {
+                        initGraph(allMeals, false)
+                    }
+                    1 -> {
+                        initGraph(allMeals, true)
+                    }
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
+
+        binding.bodyDailyCalorie.setOnClickListener{
+
+        }
     }
 
     private fun initObservers(){
@@ -65,7 +90,8 @@ class StatisticsFragment(private val category: String) : Fragment(){
     private fun renderState(state: SavedMealState) {
         when (state) {
             is SavedMealState.Success -> {
-                initGraph(state.meals)
+                allMeals = state.meals
+                initGraph(state.meals, false)
             }
             is SavedMealState.Error -> {
                 Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
@@ -74,7 +100,7 @@ class StatisticsFragment(private val category: String) : Fragment(){
         }
     }
 
-    private fun initGraph(meals: List<SavedMealEntity>){
+    private fun initGraph(meals: List<SavedMealEntity>, caloriesGraph: Boolean){
         val lineChart: LineChart = binding.chart
 
         lineChart.description.isEnabled = false
@@ -89,25 +115,67 @@ class StatisticsFragment(private val category: String) : Fragment(){
 
         lineChart.axisRight.isEnabled = false
 
-        val mealsAdded = mealsAddedInLast7Days(meals)
+        var mealsAdded: List<Float>
 
-        val entries = listOf(Entry(1f, mealsAdded[6].toFloat()), Entry(2f, mealsAdded[5].toFloat()), Entry(3f, mealsAdded[4].toFloat()), Entry(4f, mealsAdded[3].toFloat()), Entry(5f, mealsAdded[2].toFloat()), Entry(6f, mealsAdded[1].toFloat()), Entry(7f, mealsAdded[0].toFloat()))
-        val dataSet = LineDataSet(entries, "Meals added")
+        if (caloriesGraph){
+            mealsAdded = caloriesAddedInLast7Days(meals)
+        }
+        else{
+            mealsAdded = mealsAddedInLast7Days(meals)
+        }
+
+        val entries = listOf(Entry(1f, mealsAdded[6]), Entry(2f, mealsAdded[5]), Entry(3f, mealsAdded[4]), Entry(4f, mealsAdded[3]), Entry(5f, mealsAdded[2]), Entry(6f, mealsAdded[1]), Entry(7f, mealsAdded[0]))
+
+        var label = "Meals added"
+        if (caloriesGraph)label = "Calories added"
+        val dataSet = LineDataSet(entries, label)
+
+        if (caloriesGraph){
+            var colors = mutableListOf<Int>()
+
+            for (i in mealsAdded.size-2 downTo 0  ){
+                if (mealsAdded[i] > 500f){
+                    colors.add(ContextCompat.getColor(requireContext(), R.color.red))
+                }
+                else{
+                    colors.add(ContextCompat.getColor(requireContext(), R.color.green))
+                }
+            }
+
+            dataSet.colors = colors
+        }
+
+
         val lineData = LineData(dataSet)
 
         lineChart.data = lineData
         lineChart.invalidate()
     }
 
-    private fun mealsAddedInLast7Days(meals: List<SavedMealEntity>): List<Int>{
+    private fun caloriesAddedInLast7Days(meals: List<SavedMealEntity>): List<Float>{
 
-        val mealsAdded: MutableList<Int> = mutableListOf(0,0,0,0,0,0,0)
+        val mealsAdded: MutableList<Float> = mutableListOf(0f,0f,0f,0f,0f,0f,0f)
         val now: LocalDate = LocalDate.now()
 
         for (meal in meals){
             val mealDate: LocalDate = Instant.ofEpochMilli(meal.datePlaned).atZone(ZoneId.systemDefault()).toLocalDate()
             if ((mealDate.year == now.year && mealDate.month == now.month) && (now.dayOfMonth - mealDate.dayOfMonth in 0..6) ){
-                mealsAdded[now.dayOfMonth - mealDate.dayOfMonth] += 1
+                mealsAdded[now.dayOfMonth - mealDate.dayOfMonth] += meal.calorie
+            }
+        }
+
+        return mealsAdded.toList()
+    }
+
+    private fun mealsAddedInLast7Days(meals: List<SavedMealEntity>): List<Float>{
+
+        val mealsAdded: MutableList<Float> = mutableListOf(0f,0f,0f,0f,0f,0f,0f)
+        val now: LocalDate = LocalDate.now()
+
+        for (meal in meals){
+            val mealDate: LocalDate = Instant.ofEpochMilli(meal.datePlaned).atZone(ZoneId.systemDefault()).toLocalDate()
+            if ((mealDate.year == now.year && mealDate.month == now.month) && (now.dayOfMonth - mealDate.dayOfMonth in 0..6) ){
+                mealsAdded[now.dayOfMonth - mealDate.dayOfMonth] += 1f
             }
         }
 

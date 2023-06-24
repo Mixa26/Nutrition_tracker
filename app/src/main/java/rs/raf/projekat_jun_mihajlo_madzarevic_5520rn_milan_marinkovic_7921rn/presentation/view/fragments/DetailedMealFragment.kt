@@ -30,6 +30,8 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
     private val mealViewModel: MainContract.MealViewModel by viewModel<MealViewModel>()
 
     private var calories = 0f
+    private var ingredientsAvailable = 0
+    private var allIngredientsAvailable = true
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentDetailedMealBinding.inflate(layoutInflater)
@@ -55,6 +57,7 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
         }
 
         binding.detailedMealSaveMealButton.setOnClickListener{
+            Toast.makeText(context, getString(R.string.missingIngredients), Toast.LENGTH_LONG).show()
             (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, SaveMealFragment(meal, calories)).commit()
         }
 
@@ -171,7 +174,10 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
                 )
 
                 for (i in 0..19) {
-                    if (ingredients[i] == null || measures[i] == null || ingredients[i] == "" || measures[i] == "") break
+                    if (ingredients[i] == null || measures[i] == null || ingredients[i] == "" || measures[i] == "") {
+                        ingredientsAvailable = i
+                        break
+                    }
                     allIngredientsToSubmit =
                         allIngredientsToSubmit + " " + measures[i] + " " + ingredients[i]?.replace(
                             "-",
@@ -193,6 +199,9 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
         when (state) {
             is IngredientState.Success -> {
                 if (state.ingredients.isNotEmpty()) {
+                    if (ingredientsAvailable > state.ingredients.size){
+                        allIngredientsAvailable = false
+                    }
                     if (calories == 0f) {
                         for (ingredient in state.ingredients) {
                             calories += ingredient.calories
