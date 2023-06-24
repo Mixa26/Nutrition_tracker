@@ -34,7 +34,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.Calendar
 
-class SaveMealFragment(private val meal: MealEntity) : Fragment() {
+class SaveMealFragment(private val meal: MealEntity, private val calories: Float) : Fragment() {
     private lateinit var binding : FragmentSaveMealBinding
 
     private val mealViewModel: MainContract.MealViewModel by viewModel<MealViewModel>()
@@ -100,6 +100,7 @@ class SaveMealFragment(private val meal: MealEntity) : Fragment() {
             if (meal.strCategory != null) {
                 mealViewModel.saveMeal(
                     SavedMealEntity(
+                        calories,
                         dateSelected,
                         requireActivity().findViewById<RadioButton>(binding.radioGroup.checkedRadioButtonId).text.toString(),
                         0,
@@ -177,6 +178,7 @@ class SaveMealFragment(private val meal: MealEntity) : Fragment() {
             is AddMealState.Error -> {
                 Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
             }
+
         }
     }
 

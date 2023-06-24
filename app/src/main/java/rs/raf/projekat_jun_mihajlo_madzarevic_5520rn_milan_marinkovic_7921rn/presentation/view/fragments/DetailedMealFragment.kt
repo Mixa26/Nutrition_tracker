@@ -55,7 +55,7 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
         }
 
         binding.detailedMealSaveMealButton.setOnClickListener{
-            (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, SaveMealFragment(meal)).commit()
+            (context as MainActivity).supportFragmentManager.beginTransaction().replace((context as MainActivity).binding.fragmentContainer.id, SaveMealFragment(meal, calories)).commit()
         }
 
     }
@@ -87,7 +87,12 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
             is MealState.Success -> {
                 showLoadingState(false)
                 meal = state.meals[0]
-                mealViewModel.deleteAllIngredients()
+                if (isSavedMeal){
+                    binding.detailedMealCalories.text = "kcal " + meal.idMeal
+                }
+                else {
+                    mealViewModel.deleteAllIngredients()
+                }
                 fillData(meal)
             }
             is MealState.Error -> {
@@ -188,11 +193,12 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
         when (state) {
             is IngredientState.Success -> {
                 if (state.ingredients.isNotEmpty()) {
-                    calories = 0f
-                    for (ingredient in state.ingredients){
-                        calories += ingredient.calories
+                    if (calories == 0f) {
+                        for (ingredient in state.ingredients) {
+                            calories += ingredient.calories
+                        }
+                        binding.detailedMealCalories.text = calories.toString() + " kcal"
                     }
-                    binding.detailedMealCalories.text = calories.toString() + " kcal"
                 }
             }
             is IngredientState.Error -> {
@@ -306,7 +312,12 @@ class DetailedMealFragment(private var meal: MealEntity, private val isSavedMeal
         binding.detailedMealTags.isVisible = !loading
         binding.detailedMealVideo.isVisible = !loading
         binding.detailedMealAllIngredients.isVisible = !loading
-        binding.detailedMealSaveMealButton.isVisible = !loading
+        if (isSavedMeal) {
+            binding.detailedMealSaveMealButton.isVisible = false
+        }
+        else{
+            binding.detailedMealSaveMealButton.isVisible = !loading
+        }
         binding.loadingDetailedMeal.isVisible = loading
     }
 }

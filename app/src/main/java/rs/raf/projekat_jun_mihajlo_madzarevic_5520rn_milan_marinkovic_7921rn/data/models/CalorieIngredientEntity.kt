@@ -3,11 +3,9 @@ package rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.da
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "calorieingredients")
+@Entity(tableName = "calorieingredients", primaryKeys = ["mealPos", "name"])
 data class CalorieIngredientEntity (
     val mealPos: Int,
-    @PrimaryKey(autoGenerate = true)
-    val id: Int,
     val name: String,
     val calories: Float,
     val serving_size_g: Float,

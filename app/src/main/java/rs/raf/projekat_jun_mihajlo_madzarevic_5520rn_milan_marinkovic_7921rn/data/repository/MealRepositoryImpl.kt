@@ -31,7 +31,6 @@ class MealRepositoryImpl (
                 val entities = it.map{
                     CalorieIngredientEntity(
                         mealPos,
-                        0,
                         it.name,
                         it.calories,
                         it.serving_size_g,
@@ -428,7 +427,7 @@ class MealRepositoryImpl (
             .map {
                 it.map{
                     MealEntity(
-                        it.idMeal.toString(),
+                        "kcal " + it.calorie,
                         it.strMeal,
                         it.strDrinkAlternate,
                         it.strCategory,
@@ -492,7 +491,7 @@ class MealRepositoryImpl (
             .map {
                 it.map{
                     MealEntity(
-                        it.idMeal.toString(),
+                        it.calorie.toString(),
                         it.strMeal,
                         it.strDrinkAlternate,
                         it.strCategory,

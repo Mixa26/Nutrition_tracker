@@ -25,20 +25,12 @@ class MealAdapter(diffCallback: DiffUtil.ItemCallback<MealEntity>, private val f
     }
 
     override fun onBindViewHolder(holder: MealViewHolder, position: Int) {
-        holder.bind(getItem(position))
-
-        var saveMeal : Boolean = false
-        if (fragment != null) {
-            saveMeal = fragment.mealListTabLayout.selectedTabPosition == 1
-        }
-        holder.itemView.setOnClickListener{
-            (holder.itemView.context as MainActivity).supportFragmentManager.beginTransaction().replace((holder.itemView.context as MainActivity).binding.fragmentContainer.id , DetailedMealFragment(getItem(position), saveMeal)).commit()
-        }
+        holder.bind(getItem(position), fragment)
     }
 
     class MealViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
-        fun bind(meal: MealEntity){
+        fun bind(meal: MealEntity, fragment : FragmentMealListBinding?){
             itemView.findViewById<TextView>(R.id.mealTitle).text = meal.strMeal
 
             if (meal.idMeal.startsWith("kcal")){
@@ -55,6 +47,14 @@ class MealAdapter(diffCallback: DiffUtil.ItemCallback<MealEntity>, private val f
             }
             else{
                 Picasso.get().load(File(meal.strMealThumb)).into(itemView.findViewById(R.id.mealImage) as ImageView)
+            }
+
+            var saveMeal : Boolean = false
+            if (fragment != null) {
+                saveMeal = fragment.mealListTabLayout.selectedTabPosition == 1
+            }
+            itemView.setOnClickListener{
+                (itemView.context as MainActivity).supportFragmentManager.beginTransaction().replace((itemView.context as MainActivity).binding.fragmentContainer.id , DetailedMealFragment(meal, saveMeal)).commit()
             }
         }
     }
