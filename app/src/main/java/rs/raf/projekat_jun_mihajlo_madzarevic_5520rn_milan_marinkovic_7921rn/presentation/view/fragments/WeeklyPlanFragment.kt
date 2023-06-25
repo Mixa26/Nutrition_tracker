@@ -171,16 +171,17 @@ class WeeklyPlanFragment: Fragment() {
                     day = daysOfWeek[key-1]
                     stringBuilder.append(day)
                     stringBuilder.append(":")
-                    stringBuilder.append("/n")
+                    stringBuilder.append("&lt;br&gt;")
                     value.forEach{meal ->
                         stringBuilder.append(meal.strMeal)
-                        stringBuilder.append("/n")
+                        stringBuilder.append("&lt;br&gt;")
                     }
-                    stringBuilder.append("/n/n")
+                    stringBuilder.append("&lt;br&gt;&lt;br&gt;")
                 }
 
                 stringBuilder.append("You can open application by clicking on following link: ")
-                stringBuilder.append("<a href='https://www.nutrition_tracker.rs'>https://www.nutrition_tracker.rs</a>")
+                stringBuilder.append("&lt;a href='https://www.nutrition_tracker.rs'&gt;https://www.nutrition_tracker.rs&lt;/a&gt;")
+                stringBuilder.append("&lt;br>&lt;br>")
 
                 val emailIntent = Intent(Intent.ACTION_SEND)
                 emailIntent.data = Uri.parse("mailto:")
