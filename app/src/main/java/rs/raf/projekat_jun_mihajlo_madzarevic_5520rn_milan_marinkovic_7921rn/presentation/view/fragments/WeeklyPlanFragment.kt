@@ -185,7 +185,7 @@ class WeeklyPlanFragment: Fragment() {
                     val day = daysOfWeek[key - 1]
                     stringBuilder.append("  <h2>$day</h2>\n")
                     value.forEach { meal ->
-                        stringBuilder.append("  <p>${meal.strMeal}</p>\n")
+                        stringBuilder.append("  <p>${meal.strMeal}, calories: ${meal.dateModified} </p> \n")
                     }
                 }
 
