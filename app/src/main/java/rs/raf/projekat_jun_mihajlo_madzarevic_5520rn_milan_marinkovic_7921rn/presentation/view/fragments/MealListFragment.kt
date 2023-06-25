@@ -99,7 +99,12 @@ class MealListFragment(private val category: String?) : Fragment() {
             val filter = it.toString()
             if (filter.isEmpty()){
                 if (category != null) {
-                    mealViewModel.fetchAllByCategory(category)
+                    if (allMeals.size > mealsPerPage) {
+                        mealAdapter.submitList(allMeals.subList(0, mealsPerPage))
+                    }
+                    else {
+                        mealAdapter.submitList(allMeals)
+                    }
                 }
             }
             else{

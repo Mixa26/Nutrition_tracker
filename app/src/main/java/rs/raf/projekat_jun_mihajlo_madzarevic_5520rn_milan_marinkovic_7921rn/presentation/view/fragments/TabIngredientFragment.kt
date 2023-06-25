@@ -36,6 +36,8 @@ class TabIngredientFragment : Fragment() {
 
     private var countDownTimer: CountDownTimer? = null
 
+    private var tagSearch = false
+
     private var mealsPerPage = 10
     private var currentPage = 0
 
@@ -78,17 +80,8 @@ class TabIngredientFragment : Fragment() {
                 }
                 override fun onFinish() {
                     val filter = editable.toString()
-                    if(filter.isEmpty()){
-                        if (allMeals.size > mealsPerPage) {
-                            mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
-                        }
-                        else{
-                            mealAdapter.submitList(allMeals)
-                        }
-                    }else{
-                        mealViewModel.getAll()
-                        mealViewModel.fetchAllByIngredient(filter)
-                    }
+                    mealViewModel.getAll()
+                    mealViewModel.fetchAllByIngredient(filter)
                 }
             }
             countDownTimer?.start()
@@ -105,7 +98,6 @@ class TabIngredientFragment : Fragment() {
                 }
             }else{
                 val filteredList = filterByName(allMeals, filter)
-                allMeals = filteredList
                 if (filteredList.size > mealsPerPage) {
                     mealAdapter.submitList(filteredList.subList(0,mealsPerPage))
                 }
@@ -115,8 +107,35 @@ class TabIngredientFragment : Fragment() {
             }
         }
 
-        binding.inputTag.doAfterTextChanged {
-            //TODO
+        binding.inputTag.doAfterTextChanged {editable->
+            countDownTimer?.cancel() // Prekida prethodni tajmer ako postoji
+
+            countDownTimer = object : CountDownTimer(2000, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    // Ne radi ništa tokom odbrojavanja
+                }
+
+                override fun onFinish() {
+                    val filter = editable.toString()
+                    if (filter.isEmpty()) {
+                        tagSearch = false
+                        if (allMeals.size > mealsPerPage) {
+                            mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
+                        }
+                        else{
+                            mealAdapter.submitList(allMeals)
+                        }
+                    } else {
+                        tagSearch = true
+                        for(meal in mealAdapter.currentList){
+                            mealViewModel.fetchAllByNameForTag(meal.strMeal)
+                        }
+                        mealViewModel.getAllByTag(filter)
+                    }
+                }
+            }
+
+            countDownTimer?.start() // Pokreće tajmer za 3 sekunde
         }
 
         binding.sortBtn.setOnClickListener {
@@ -163,12 +182,25 @@ class TabIngredientFragment : Fragment() {
         when(state){
             is MealState.Success -> {
                 showLoadingState(false)
-                allMeals = state.meals
-                if (allMeals.size > mealsPerPage) {
-                    mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
+                if (tagSearch && state.meals[0].idMeal == "-1")
+                {
+                    val list = state.meals.subList(1,state.meals.size)
+                    if (list.size > mealsPerPage) {
+                        mealAdapter.submitList(list.subList(0,mealsPerPage))
+                    }
+                    else{
+                        mealAdapter.submitList(list)
+                    }
                 }
-                else{
-                    mealAdapter.submitList(allMeals)
+                else if (!tagSearch)
+                {
+                    allMeals = state.meals
+                    if (state.meals.size > mealsPerPage) {
+                        mealAdapter.submitList(state.meals.subList(0,mealsPerPage))
+                    }
+                    else{
+                        mealAdapter.submitList(state.meals)
+                    }
                 }
             }
             is MealState.Error -> {

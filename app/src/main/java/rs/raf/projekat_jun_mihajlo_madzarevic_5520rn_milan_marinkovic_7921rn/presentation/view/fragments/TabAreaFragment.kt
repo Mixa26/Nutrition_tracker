@@ -34,8 +34,11 @@ class TabAreaFragment : Fragment() {
     private val mealViewModel: MainContract.MealViewModel by viewModel<MealViewModel>()
 
     private lateinit var allMeals: List<MealEntity>
+    private lateinit var filteredList: List<MealEntity>
 
     private var countDownTimer: CountDownTimer? = null
+
+    private var tagSearch = false
 
     private var mealsPerPage = 10
     private var currentPage = 0
@@ -84,17 +87,8 @@ class TabAreaFragment : Fragment() {
 
                 override fun onFinish() {
                     val filter = editable.toString()
-                    if(filter.isEmpty()){
-                        if (allMeals.size > mealsPerPage) {
-                            mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
-                        }
-                        else{
-                            mealAdapter.submitList(allMeals)
-                        }
-                    }else{
-                        mealViewModel.getAll()
-                        mealViewModel.fetchAllByArea(filter)
-                    }
+                    mealViewModel.getAll()
+                    mealViewModel.fetchAllByArea(filter)
                 }
             }
 
@@ -104,15 +98,52 @@ class TabAreaFragment : Fragment() {
         binding.inputName.doAfterTextChanged {
             val filter = it.toString()
             if(filter.isEmpty()){
-                mealAdapter.submitList(allMeals)
+                if (allMeals.size > mealsPerPage) {
+                    mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
+                }
+                else{
+                    mealAdapter.submitList(allMeals)
+                }
             }else{
                 val filteredList = filterByName(allMeals, filter)
-                mealAdapter.submitList(filteredList)
+                if (filteredList.size > mealsPerPage) {
+                    mealAdapter.submitList(filteredList.subList(0,mealsPerPage))
+                }
+                else{
+                    mealAdapter.submitList(filteredList)
+                }
             }
         }
 
-        binding.inputTag.doAfterTextChanged {
-            //TODO(not implemented yet)
+        binding.inputTag.doAfterTextChanged {editable->
+            countDownTimer?.cancel() // Prekida prethodni tajmer ako postoji
+
+            countDownTimer = object : CountDownTimer(2000, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    // Ne radi ništa tokom odbrojavanja
+                }
+
+                override fun onFinish() {
+                    val filter = editable.toString()
+                    if (filter.isEmpty()) {
+                        tagSearch = false
+                        if (allMeals.size > mealsPerPage) {
+                            mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
+                        }
+                        else{
+                            mealAdapter.submitList(allMeals)
+                        }
+                    } else {
+                        tagSearch = true
+                        for(meal in mealAdapter.currentList){
+                            mealViewModel.fetchAllByNameForTag(meal.strMeal)
+                        }
+                        mealViewModel.getAllByTag(filter)
+                    }
+                }
+            }
+
+            countDownTimer?.start() // Pokreće tajmer za 3 sekunde
         }
 
         binding.sortBtn.setOnClickListener {
@@ -159,12 +190,25 @@ class TabAreaFragment : Fragment() {
         when(state){
             is MealState.Success -> {
                 showLoadingState(false)
-                allMeals = state.meals
-                if (allMeals.size > mealsPerPage) {
-                    mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
+                if (tagSearch && state.meals[0].idMeal == "-1")
+                {
+                    val list = state.meals.subList(1,state.meals.size)
+                    if (list.size > mealsPerPage) {
+                        mealAdapter.submitList(list.subList(0,mealsPerPage))
+                    }
+                    else{
+                        mealAdapter.submitList(list)
+                    }
                 }
-                else{
-                    mealAdapter.submitList(allMeals)
+                else if (!tagSearch)
+                {
+                    allMeals = state.meals
+                    if (state.meals.size > mealsPerPage) {
+                        mealAdapter.submitList(state.meals.subList(0,mealsPerPage))
+                    }
+                    else{
+                        mealAdapter.submitList(state.meals)
+                    }
                 }
             }
             is MealState.Error -> {
