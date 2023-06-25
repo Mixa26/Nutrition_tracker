@@ -161,41 +161,26 @@ class WeeklyPlanFragment: Fragment() {
         }
         binding.sendPlanBtn.setOnClickListener {
 
+            val stringBuilder = StringBuilder()
 
             if(binding.weeklyPlanEmail.toString().isEmpty()){
                Toast.makeText(context, "You have to enter email before click on Send button", Toast.LENGTH_SHORT).show()
             }else{
-                val stringBuilder = StringBuilder()
-
-                stringBuilder.append("<!DOCTYPE html>\n")
-                stringBuilder.append("<html>\n")
-                stringBuilder.append("<head>\n")
-                stringBuilder.append("  <title>Nutrition Tracker</title>\n")
-                stringBuilder.append("<style>\n")
-                stringBuilder.append("  .hide-tags {\n")
-                stringBuilder.append("    display: none;\n")
-                stringBuilder.append("  }\n")
-                stringBuilder.append("</style>\n")
-                stringBuilder.append("</head>\n")
-                stringBuilder.append("<body>\n")
-                stringBuilder.append("  <h1>Weekly Meal Plan</h1>\n")
-
-
-                hashMap.forEach { (key, value) ->
-                    val day = daysOfWeek[key - 1]
-                    stringBuilder.append("  <h2>$day</h2>\n")
-                    value.forEach { meal ->
-                        stringBuilder.append("  <p>${meal.strMeal}, calories: ${meal.dateModified} </p> \n")
+                var day: String
+                hashMap.forEach{(key, value)->
+                    day = daysOfWeek[key-1]
+                    stringBuilder.append(day)
+                    stringBuilder.append(":")
+                    stringBuilder.append("\n")
+                    value.forEach{meal ->
+                        stringBuilder.append(meal.strMeal + " " + meal.dateModified)
+                        stringBuilder.append("\n")
                     }
+                    stringBuilder.append("\n\n")
                 }
 
-                stringBuilder.append("  <p>You can open the application by clicking on the following link:</p>\n")
-                stringBuilder.append("  <p><a href='https://www.nutrition_tracker.rs'>https://www.nutrition_tracker.rs</a></p>\n")
-
-                stringBuilder.append("</body>\n")
-                stringBuilder.append("</html>\n")
-
-                val htmlString = stringBuilder.toString()
+                stringBuilder.append("You can open application by clicking on following link: ")
+                stringBuilder.append("<a href='https://www.nutrition_tracker.rs'>https://www.nutrition_tracker.rs</a>")
 
                 val emailIntent = Intent(Intent.ACTION_SEND)
                 emailIntent.data = Uri.parse("mailto:")
@@ -205,7 +190,7 @@ class WeeklyPlanFragment: Fragment() {
 
                 emailIntent.putExtra(Intent.EXTRA_EMAIL, email)
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Weekly meal plan")
-                emailIntent.putExtra(Intent.EXTRA_TEXT, htmlString)
+                emailIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString())
 
                 try {
                     //start email intent

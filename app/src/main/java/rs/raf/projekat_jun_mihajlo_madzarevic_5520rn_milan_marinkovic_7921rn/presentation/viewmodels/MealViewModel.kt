@@ -45,7 +45,7 @@ class MealViewModel (
     init {
         var filter = ""
         val subscription = publishSubject
-            .debounce(200, TimeUnit.MILLISECONDS)
+            .debounce(2000, TimeUnit.MILLISECONDS)
             .distinctUntilChanged()
             .switchMap {
                 filter = it
