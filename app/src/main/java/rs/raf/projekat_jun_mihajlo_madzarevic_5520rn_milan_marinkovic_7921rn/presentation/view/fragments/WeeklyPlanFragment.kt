@@ -12,18 +12,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.CalorieMealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.data.models.MealEntity
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.contract.MainContract
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.databinding.FragmentPlanBinding
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.recycler.adapter.MealAdapter
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.recycler.adapter.PlanMealAdapter
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.recycler.differ.MealDiffItemCallback
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.CalorieMealState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteCalorieMealState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.DeleteIngredientState
+import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.IngredientState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.states.MealState
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.viewmodels.MealViewModel
 import timber.log.Timber
@@ -37,34 +43,39 @@ class WeeklyPlanFragment: Fragment() {
 
     private val mealViewModel: MainContract.MealViewModel by viewModel<MealViewModel>()
 
+    //for kcal
+    private var calorieCounter = 0
+    var allMealsFull: MutableList<CalorieMealEntity> = mutableListOf()
+
     private lateinit var allMeals: List<MealEntity>
     private var countDownTimer: CountDownTimer? = null
 
     val daysOfWeek = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
+    private var mealsPerDay: List<MealEntity> = mutableListOf()
 
-    companion object{
+    private var dayCounter: Int = 1
 
-        private var mealsPerDay: List<MealEntity> = mutableListOf()
+    private val hashMap: HashMap<Int, List<MealEntity>> = HashMap()
 
-        private var dayCounter: Int = 1
-
-        private val hashMap: HashMap<Int, List<MealEntity>> = HashMap()
-
-        init{
-            for(i in 1..7){
-                hashMap[i] = mutableListOf()
-            }
+    init{
+        for(i in 1..7){
+            hashMap[i] = mutableListOf()
         }
+    }
 
-        fun addMealToDay(meal: MealEntity) {
+    fun addMealToDay(meal: MealEntity) {
+        if (meal.dateModified != null && meal.dateModified.split(" ")[1].toFloat() == 0f){
+            Toast.makeText(context, "Meal couldn't be added, no calorie data found!", Toast.LENGTH_LONG).show()
+        }
+        else {
             if (!mealsPerDay.contains(meal)) {
                 mealsPerDay = mealsPerDay + meal
             }
+            Toast.makeText(context, "Meal added to plan", Toast.LENGTH_SHORT).show()
         }
-
-
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,7 +107,7 @@ class WeeklyPlanFragment: Fragment() {
     }
 
     private fun initRecycler(){
-        mealAdapter = PlanMealAdapter(MealDiffItemCallback(), null)
+        mealAdapter = PlanMealAdapter(MealDiffItemCallback(), this)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = mealAdapter
     }
@@ -113,18 +124,17 @@ class WeeklyPlanFragment: Fragment() {
                 override fun onFinish() {
                     val filter = editable.toString()
                     if(filter.isEmpty()){
-                        mealAdapter.submitList(allMeals)
+                        mealAdapter.submitList(listOf())
                     }else{
                         mealViewModel.getAll()
-                        mealViewModel.fetchAllByCategory(filter)
+                        mealViewModel.fetchAllByName(filter)
                     }
                 }
             }
             countDownTimer?.start()
         }
+
         binding.nextDayBtn.setOnClickListener {
-
-
 
             hashMap[dayCounter] = mealsPerDay
 
@@ -215,6 +225,22 @@ class WeeklyPlanFragment: Fragment() {
             Timber.e(it.toString())
             renderState(it)
         })
+        mealViewModel.deleteCalorieMealState.observe(viewLifecycleOwner, Observer {
+            Timber.e(it.toString())
+            renderStateDeleteCalorie(it)
+        })
+        mealViewModel.deleteIngredientState.observe(viewLifecycleOwner, Observer {
+            Timber.e(it.toString())
+            renderStateDeleteIngredient(it)
+        })
+        mealViewModel.calorieMealState.observe(viewLifecycleOwner, Observer {
+            Timber.e(it.toString())
+            renderStateCalorie(it)
+        })
+        mealViewModel.ingredientState.observe(viewLifecycleOwner, Observer {
+            Timber.e(it.toString())
+            renderStateIngredient(it)
+        })
     }
 
     private fun renderState(state: MealState){
@@ -222,6 +248,11 @@ class WeeklyPlanFragment: Fragment() {
             is MealState.Success -> {
                 allMeals = state.meals
                 mealAdapter.submitList(state.meals)
+
+                calorieCounter = allMeals.size
+
+                allMealsFull.clear()
+                mealViewModel.deleteAllCalorie()
             }
             is MealState.Error -> {
                 Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
@@ -236,4 +267,245 @@ class WeeklyPlanFragment: Fragment() {
     }
 
 
+    private fun renderStateDeleteCalorie(state: DeleteCalorieMealState) {
+        when (state) {
+            is DeleteCalorieMealState.Success -> {
+                showLoadingState(true)
+                mealViewModel.deleteAllIngredients()
+            }
+            is DeleteCalorieMealState.Error -> {
+                showLoadingState(false)
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+            }
+
+        }
+    }
+
+    private fun renderStateDeleteIngredient(state: DeleteIngredientState) {
+        when (state) {
+            is DeleteIngredientState.Success -> {
+                showLoadingState(true)
+                mealViewModel.getAllCalorie()
+                for (meal in allMeals){
+                    mealViewModel.fetchAllByNameForCalorie(meal.strMeal)
+                }
+            }
+            is DeleteIngredientState.Error -> {
+                showLoadingState(false)
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+            }
+
+        }
+    }
+
+    private fun renderStateCalorie(state: CalorieMealState) {
+        when (state) {
+            is CalorieMealState.Success -> {
+                showLoadingState(false)
+                if (state.meals.size < calorieCounter){
+                    showLoadingState(true)
+                }
+                else {
+                    showLoadingState(false)
+                    allMealsFull = state.meals.toMutableList()
+
+                    mealViewModel.getAllIngredients()
+
+                    var i: Int = 0
+                    for (meal in allMealsFull) {
+
+                        var ingredients: MutableList<String?> = mutableListOf()
+                        var measures: MutableList<String?> = mutableListOf()
+
+                        var allIngredientsToSubmit = ""
+
+                        ingredients.addAll(
+                            listOf(
+                                meal.strIngredient1,
+                                meal.strIngredient2,
+                                meal.strIngredient3,
+                                meal.strIngredient4,
+                                meal.strIngredient5,
+                                meal.strIngredient6,
+                                meal.strIngredient7,
+                                meal.strIngredient8,
+                                meal.strIngredient9,
+                                meal.strIngredient10,
+                                meal.strIngredient11,
+                                meal.strIngredient12,
+                                meal.strIngredient13,
+                                meal.strIngredient14,
+                                meal.strIngredient15,
+                                meal.strIngredient16,
+                                meal.strIngredient17,
+                                meal.strIngredient18,
+                                meal.strIngredient19,
+                                meal.strIngredient20
+                            )
+                        )
+
+                        measures.addAll(
+                            listOf(
+                                meal.strMeasure1,
+                                meal.strMeasure2,
+                                meal.strMeasure3,
+                                meal.strMeasure4,
+                                meal.strMeasure5,
+                                meal.strMeasure6,
+                                meal.strMeasure7,
+                                meal.strMeasure8,
+                                meal.strMeasure9,
+                                meal.strMeasure10,
+                                meal.strMeasure11,
+                                meal.strMeasure12,
+                                meal.strMeasure13,
+                                meal.strMeasure14,
+                                meal.strMeasure15,
+                                meal.strMeasure16,
+                                meal.strMeasure17,
+                                meal.strMeasure18,
+                                meal.strMeasure19,
+                                meal.strMeasure20
+                            )
+                        )
+
+                        for (i in 0..19) {
+                            if (ingredients[i] == null || measures[i] == null || ingredients[i] == "" || measures[i] == "") break
+                            allIngredientsToSubmit =
+                                allIngredientsToSubmit + " " + measures[i] + " " + ingredients[i]?.replace(
+                                    "-",
+                                    " "
+                                )
+                        }
+
+                        mealViewModel.fetchAllIngredientsByName(allIngredientsToSubmit, i)
+                        i++
+                    }
+                }
+
+            }
+            is CalorieMealState.Error -> {
+                showLoadingState(false)
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+            }
+            is CalorieMealState.DataFetched -> {
+                showLoadingState(false)
+            }
+            is CalorieMealState.Loading -> {
+                showLoadingState(true)
+            }
+
+        }
+    }
+
+    private fun renderStateIngredient(state: IngredientState) {
+        when (state) {
+            is IngredientState.Success -> {
+                showLoadingState(false)
+                if (state.ingredients.isNotEmpty())
+                {
+                    var ignorePos = mutableListOf<Int>()
+                    for (i in 0 until allMealsFull.size){
+                        if (allMealsFull[i].calorie != 0f){
+                            ignorePos.add(i)
+                        }
+                    }
+
+                    for (ingredient in state.ingredients) {
+                        if (!ignorePos.contains(ingredient.mealPos)) {
+                            allMealsFull[ingredient.mealPos].calorie += ingredient.calories
+                        }
+                    }
+
+                    var allMealsCopy = mutableListOf<MealEntity>()
+
+                    fun addToMealsCopy(meal: CalorieMealEntity) {
+                        allMealsCopy.add(
+                            MealEntity(
+                                meal.idMeal.toString(),
+                                meal.strMeal,
+                                meal.strDrinkAlternate,
+                                meal.strCategory,
+                                meal.strArea,
+                                meal.strInstructions,
+                                meal.strMealThumb,
+                                meal.strTags,
+                                meal.strYoutube,
+                                meal.strIngredient1,
+                                meal.strIngredient2,
+                                meal.strIngredient3,
+                                meal.strIngredient4,
+                                meal.strIngredient5,
+                                meal.strIngredient6,
+                                meal.strIngredient7,
+                                meal.strIngredient8,
+                                meal.strIngredient9,
+                                meal.strIngredient10,
+                                meal.strIngredient11,
+                                meal.strIngredient12,
+                                meal.strIngredient13,
+                                meal.strIngredient14,
+                                meal.strIngredient15,
+                                meal.strIngredient16,
+                                meal.strIngredient17,
+                                meal.strIngredient18,
+                                meal.strIngredient19,
+                                meal.strIngredient20,
+                                meal.strMeasure1,
+                                meal.strMeasure2,
+                                meal.strMeasure3,
+                                meal.strMeasure4,
+                                meal.strMeasure5,
+                                meal.strMeasure6,
+                                meal.strMeasure7,
+                                meal.strMeasure8,
+                                meal.strMeasure9,
+                                meal.strMeasure10,
+                                meal.strMeasure11,
+                                meal.strMeasure12,
+                                meal.strMeasure13,
+                                meal.strMeasure14,
+                                meal.strMeasure15,
+                                meal.strMeasure16,
+                                meal.strMeasure17,
+                                meal.strMeasure18,
+                                meal.strMeasure19,
+                                meal.strMeasure20,
+                                meal.strSource,
+                                meal.strImageSource,
+                                meal.strCreativeCommonsConfirmed,
+                                "kcal " + meal.calorie
+                            )
+                        )
+                    }
+
+                    for (meal in allMealsFull) {
+                        addToMealsCopy(meal)
+                    }
+
+                    allMeals = allMealsCopy
+                    mealAdapter.submitList(allMeals)
+                }
+            }
+            is IngredientState.Error -> {
+                showLoadingState(false)
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+            }
+            is IngredientState.DataFetched -> {
+                showLoadingState(false) }
+            is IngredientState.Loading -> {
+                showLoadingState(true)
+            }
+        }
+    }
+
+    private fun showLoadingState(loading: Boolean) {
+        binding.weeklyPlanRv.isVisible = !loading
+        binding.dayTv.isVisible = !loading
+        binding.weeklyPlanEmail.isVisible = !loading
+        binding.nextDayBtn.isVisible = !loading
+        binding.sendPlanBtn.isVisible = !loading
+        binding.weeklyPlanInputCategory.isVisible = !loading
+        binding.loadingPlan.isVisible = loading
+    }
 }

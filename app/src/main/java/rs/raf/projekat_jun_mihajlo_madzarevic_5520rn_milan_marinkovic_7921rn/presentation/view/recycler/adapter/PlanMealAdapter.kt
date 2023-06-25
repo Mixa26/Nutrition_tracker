@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +20,7 @@ import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.pre
 import rs.raf.projekat_jun_mihajlo_madzarevic_5520rn_milan_marinkovic_7921rn.presentation.view.fragments.WeeklyPlanFragment
 import java.io.File
 
-class PlanMealAdapter(diffCallback: DiffUtil.ItemCallback<MealEntity>, private val fragment: FragmentMealListBinding?): ListAdapter<MealEntity, PlanMealAdapter.PlanMealViewHolder>(diffCallback) {
+class PlanMealAdapter(diffCallback: DiffUtil.ItemCallback<MealEntity>, private val fragment: WeeklyPlanFragment): ListAdapter<MealEntity, PlanMealAdapter.PlanMealViewHolder>(diffCallback) {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlanMealViewHolder {
@@ -27,25 +28,24 @@ class PlanMealAdapter(diffCallback: DiffUtil.ItemCallback<MealEntity>, private v
     }
 
     override fun onBindViewHolder(holder: PlanMealViewHolder, position: Int) {
-        holder.bind(getItem(position))
-
-        holder.itemView.setOnClickListener{
-
-            var saveMeal : Boolean = false
-            if (fragment != null) {
-                saveMeal = fragment.mealListTabLayout.selectedTabPosition == 1
-            }
-
-            (holder.itemView.context as MainActivity).supportFragmentManager.beginTransaction().replace((holder.itemView.context as MainActivity).binding.fragmentContainer.id, DetailedMealFragment(getItem(position), saveMeal)).commit()
-        }
+        holder.bind(getItem(position), fragment)
     }
 
 
     class PlanMealViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
 
-        fun bind(meal: MealEntity){
+        fun bind(meal: MealEntity, fragment: WeeklyPlanFragment){
             itemView.findViewById<TextView>(R.id.planMealTitle).text = meal.strMeal
+
+            if (meal.dateModified != null && meal.dateModified.startsWith("kcal")){
+                if (meal.dateModified.split(" ")[1].toFloat() == 0f){
+                    itemView.findViewById<TextView>(R.id.planMealCalorie).text = "kcal unavailable"
+                }
+                else {
+                    itemView.findViewById<TextView>(R.id.planMealCalorie).text = meal.dateModified
+                }
+            }
 
             if(meal.strMealThumb.startsWith("http")){
                 Picasso.get().load(meal.strMealThumb).into(itemView.findViewById(R.id.planMealImage) as ImageView)
@@ -54,7 +54,7 @@ class PlanMealAdapter(diffCallback: DiffUtil.ItemCallback<MealEntity>, private v
             }
 
             (itemView.findViewById(R.id.addMealToDay) as ImageView).setOnClickListener{
-                WeeklyPlanFragment.addMealToDay(meal)
+                fragment.addMealToDay(meal)
             }
 
         }
