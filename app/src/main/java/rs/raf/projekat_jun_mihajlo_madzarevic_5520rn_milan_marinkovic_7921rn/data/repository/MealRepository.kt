@@ -49,6 +49,8 @@ interface MealRepository {
     fun fetchAllByArea(area: String): Observable<Resource<Unit>>
     fun fetchAllByIngredient(ingredient: String): Observable<Resource<Unit>>
 
+    fun fetchAllByIngredientForMealList(ingredient: String): Observable<Resource<Unit>>
+
     fun fetchAllByNameForTag(name: String): Observable<Resource<Unit>>
     fun getAllByTag(tag: String):Observable<List<MealEntity>>
 }

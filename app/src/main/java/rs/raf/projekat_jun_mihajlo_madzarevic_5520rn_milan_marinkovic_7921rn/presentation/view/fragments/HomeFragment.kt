@@ -151,7 +151,9 @@ class HomeFragment : Fragment() {
         var categories: MutableList<String> = mutableListOf()
 
         for (meal in meals){
-            meal.strCategory?.let { categories.add(it.lowercase()) }
+            if (!categories.contains(meal.strCategory)) {
+                meal.strCategory?.let { categories.add(it.lowercase()) }
+            }
         }
 
         return categories

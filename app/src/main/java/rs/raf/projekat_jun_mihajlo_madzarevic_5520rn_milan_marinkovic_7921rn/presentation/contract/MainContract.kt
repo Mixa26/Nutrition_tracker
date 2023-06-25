@@ -75,6 +75,8 @@ interface MainContract {
         fun fetchAllByArea(area: String)
         fun fetchAllByIngredient(ingredient: String)
 
+        fun fetchAllByIngredientForMealList(ingredient: String)
+
         fun fetchAllByNameForTag(name: String)
         fun getAllByTag(tag: String)
 

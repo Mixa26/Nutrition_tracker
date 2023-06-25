@@ -42,10 +42,12 @@ class MealViewModel (
     override val ingredientState: MutableLiveData<IngredientState> = MutableLiveData()
 
     init {
+        var filter = ""
         val subscription = publishSubject
             .debounce(200, TimeUnit.MILLISECONDS)
             .distinctUntilChanged()
             .switchMap {
+                filter = it
                 mealRepository
                     .fetchAllByName(it)
                     .subscribeOn(Schedulers.io())
@@ -59,7 +61,10 @@ class MealViewModel (
                 {
                     when(it) {
                         is Resource.Loading -> mealState.value = MealState.Loading
-                        is Resource.Success -> mealState.value = MealState.DataFetched
+                        is Resource.Success -> {
+                            mealState.value = MealState.DataFetched
+                            fetchAllByIngredientForMealList(filter)
+                        }
                         is Resource.Error -> mealState.value = MealState.Error("Error happened while fetching data from the server")
                     }
                 },
@@ -270,6 +275,28 @@ class MealViewModel (
     }
 
     override fun fetchAllByIngredient(ingredient: String) {
+        val subscription = mealRepository
+            .fetchAllByIngredient(ingredient)
+            .startWith(Resource.Loading())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    when(it){
+                        is Resource.Loading -> mealState.value = MealState.Loading
+                        is Resource.Success -> mealState.value = MealState.DataFetched
+                        is Resource.Error -> mealState.value = MealState.Error("Error happened while fetching data from the server")
+                    }
+                },
+                {
+                    mealState.value = MealState.Error("Error happened while fetching data from the server")
+                    Timber.e(it)
+                }
+            )
+        subscriptions.add(subscription)
+    }
+
+    override fun fetchAllByIngredientForMealList(ingredient: String) {
         val subscription = mealRepository
             .fetchAllByIngredient(ingredient)
             .startWith(Resource.Loading())

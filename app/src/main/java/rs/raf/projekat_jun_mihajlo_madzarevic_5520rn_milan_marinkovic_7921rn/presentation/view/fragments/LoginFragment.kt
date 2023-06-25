@@ -34,10 +34,12 @@ class LoginFragment : Fragment() {
 
     private fun initUi() {
         binding.button.setOnClickListener {
-            loginViewModel.getByUsernameAndPassword(
-                binding.loginUsername.text.toString(),
-                binding.loginPassword.text.toString()
-            )
+            if (binding.loginUsername.text.toString().length >= 4 && binding.loginPassword.text.length >= 4)
+            {
+                loginViewModel.getByUsernameAndPassword(
+                    binding.loginUsername.text.toString(),
+                    binding.loginPassword.text.toString()
+                )
                 .subscribe(
                     {
                         if (it == null) {
@@ -53,6 +55,10 @@ class LoginFragment : Fragment() {
                         Toast.makeText(requireContext(), R.string.bad_credentials, Toast.LENGTH_LONG).show()
                     }
                 )
+            }
+            else{
+                Toast.makeText(requireContext(), R.string.credentials_short, Toast.LENGTH_LONG).show()
+            }
         }
     }
 }

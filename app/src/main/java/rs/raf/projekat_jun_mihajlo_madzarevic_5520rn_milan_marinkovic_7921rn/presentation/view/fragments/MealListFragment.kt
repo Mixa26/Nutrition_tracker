@@ -189,6 +189,7 @@ class MealListFragment(private val category: String?) : Fragment() {
                 else {
                     mealAdapter.submitList(state.meals)
                 }
+
             }
             is MealState.Error -> {
                 showLoadingState(false)

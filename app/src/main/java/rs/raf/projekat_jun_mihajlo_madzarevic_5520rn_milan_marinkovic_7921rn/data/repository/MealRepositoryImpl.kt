@@ -216,65 +216,70 @@ class MealRepositoryImpl (
     override fun fetchAllByCategory(category: String): Observable<Resource<Unit>> {
         return remoteDataSource
             .getAllByCategory(category)
-            .doOnNext{
-                val entities = it.meals.map{
-                    MealEntity(
-                        it.idMeal,
-                        it.strMeal,
-                        null,
-                        category,
-                        null,
-                        null,
-                        it.strMealThumb,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                    )
+            .doOnNext {
+                if (it != null && it.meals != null) {
+                    val entities = it.meals.map {
+                        MealEntity(
+                            it.idMeal,
+                            it.strMeal,
+                            null,
+                            category,
+                            null,
+                            null,
+                            it.strMealThumb,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null
+                        )
+                    }
+                    localDataSource.deleteAndInsertAll(entities)
                 }
-                localDataSource.deleteAndInsertAll(entities)
+                else{
+                    localDataSource.deleteAndInsertAll(listOf())
+                }
             }
             .map {
                 Resource.Success(Unit)
@@ -625,64 +630,69 @@ class MealRepositoryImpl (
         return remoteDataSource
             .getAllByArea(area)
             .doOnNext{
-                val entities = it.meals.map{
-                    MealEntity(
-                        it.idMeal,
-                        it.strMeal,
-                        null,
-                        null,
-                        area,
-                        null,
-                        it.strMealThumb,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                    )
+                if (it != null && it.meals != null) {
+                    val entities = it.meals.map {
+                        MealEntity(
+                            it.idMeal,
+                            it.strMeal,
+                            null,
+                            null,
+                            area,
+                            null,
+                            it.strMealThumb,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null
+                        )
+                    }
+                    localDataSource.deleteAndInsertAll(entities)
                 }
-                localDataSource.deleteAndInsertAll(entities)
+                else{
+                    localDataSource.deleteAndInsertAll(listOf())
+                }
             }
             .map {
                 Resource.Success(Unit)
@@ -690,6 +700,79 @@ class MealRepositoryImpl (
     }
 
     override fun fetchAllByIngredient(ingredient: String): Observable<Resource<Unit>> {
+        return remoteDataSource
+            .getAllByIngredient(ingredient)
+            .doOnNext{
+                if (it != null && it.meals != null) {
+                    val entities = it.meals.map {
+                        MealEntity(
+                            it.idMeal,
+                            it.strMeal,
+                            null,
+                            null,
+                            null,
+                            null,
+                            it.strMealThumb,
+                            null,
+                            null,
+                            ingredient,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null
+                        )
+                    }
+                    localDataSource.deleteAndInsertAll(entities)
+                }
+                else{
+                    localDataSource.deleteAndInsertAll(listOf())
+                }
+            }
+            .map {
+                Resource.Success(Unit)
+            }
+    }
+
+    override fun fetchAllByIngredientForMealList(ingredient: String): Observable<Resource<Unit>> {
         return remoteDataSource
             .getAllByIngredient(ingredient)
             .doOnNext{
@@ -750,7 +833,7 @@ class MealRepositoryImpl (
                         null
                     )
                 }
-                localDataSource.deleteAndInsertAll(entities)
+                localDataSource.insertAll(entities).blockingAwait()
             }
             .map {
                 Resource.Success(Unit)

@@ -4,6 +4,7 @@
     <string name="password">password</string>
     <string name="login">Login</string>
     <string name="bad_credentials">Bad credentials!</string>
+    <string name="credentials_short">Username and password must be longer than 4 characters</string>
     <string name="error">Error encountered</string>
     <string name="categories">Categories</string>
     <string name="mealsInCategory">Meals in</string>
@@ -38,6 +39,7 @@
     <string name="fetchCalories">Fetch calories</string>
     <string name="sortAndFilter">Sort and filter</string>
     <string name="filter">Filter</string>
+    <string name="plan">Plan</string>
     <string name="calorieFilterTitle">Filter and sort by calories</string>
     <string name="error_string_not_number">Inputs must be numbers!</string>
     <string name="error_no_kcal_list">Calories have to be fetched first!</string>

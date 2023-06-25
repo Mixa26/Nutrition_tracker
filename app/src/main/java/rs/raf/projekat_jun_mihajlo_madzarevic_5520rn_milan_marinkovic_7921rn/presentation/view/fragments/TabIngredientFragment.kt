@@ -36,6 +36,9 @@ class TabIngredientFragment : Fragment() {
 
     private var countDownTimer: CountDownTimer? = null
 
+    private var mealsPerPage = 10
+    private var currentPage = 0
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,6 +54,7 @@ class TabIngredientFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        allMeals = listOf()
         init()
     }
 
@@ -75,7 +79,12 @@ class TabIngredientFragment : Fragment() {
                 override fun onFinish() {
                     val filter = editable.toString()
                     if(filter.isEmpty()){
-                        mealAdapter.submitList(allMeals)
+                        if (allMeals.size > mealsPerPage) {
+                            mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
+                        }
+                        else{
+                            mealAdapter.submitList(allMeals)
+                        }
                     }else{
                         mealViewModel.getAll()
                         mealViewModel.fetchAllByIngredient(filter)
@@ -88,11 +97,21 @@ class TabIngredientFragment : Fragment() {
         binding.inputName.doAfterTextChanged {
             val filter = it.toString()
             if(filter.isEmpty()){
-                mealAdapter.submitList(allMeals)
+                if (allMeals.size > mealsPerPage) {
+                    mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
+                }
+                else{
+                    mealAdapter.submitList(allMeals)
+                }
             }else{
                 val filteredList = filterByName(allMeals, filter)
-                mealAdapter.submitList(filteredList)
                 allMeals = filteredList
+                if (filteredList.size > mealsPerPage) {
+                    mealAdapter.submitList(filteredList.subList(0,mealsPerPage))
+                }
+                else{
+                    mealAdapter.submitList(filteredList)
+                }
             }
         }
 
@@ -103,7 +122,33 @@ class TabIngredientFragment : Fragment() {
         binding.sortBtn.setOnClickListener {
             var sortedMeals: List<MealEntity>
             sortedMeals = sortMealsByName(allMeals)
-            mealAdapter.submitList(sortedMeals)
+            if (sortedMeals.size > mealsPerPage) {
+                mealAdapter.submitList(sortedMeals.subList(0,mealsPerPage))
+            }
+            else{
+                mealAdapter.submitList(sortedMeals)
+            }
+        }
+
+        //Load previous 10 meals
+        binding.filterBackwardPagination.setOnClickListener{
+            if ((currentPage-1) >= 0){
+                currentPage -= 1
+                mealAdapter.submitList(allMeals.subList(currentPage * mealsPerPage, (currentPage+1) * mealsPerPage))
+            }
+        }
+
+        //Load next 10 meals
+        binding.filterForwardPagination.setOnClickListener{
+            if ((currentPage+1) * mealsPerPage < allMeals.size){
+                currentPage += 1
+                if ((currentPage+1) * mealsPerPage < allMeals.size){
+                    mealAdapter.submitList(allMeals.subList(currentPage * mealsPerPage, (currentPage+1) * mealsPerPage))
+                }
+                else {
+                    mealAdapter.submitList(allMeals.subList(currentPage * mealsPerPage, allMeals.size))
+                }
+            }
         }
     }
 
@@ -119,7 +164,12 @@ class TabIngredientFragment : Fragment() {
             is MealState.Success -> {
                 showLoadingState(false)
                 allMeals = state.meals
-                mealAdapter.submitList(state.meals)
+                if (allMeals.size > mealsPerPage) {
+                    mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
+                }
+                else{
+                    mealAdapter.submitList(allMeals)
+                }
             }
             is MealState.Error -> {
                 showLoadingState(false)

@@ -43,6 +43,9 @@ class TabCategoryFragment : Fragment() {
 
     private var isTagSearch: Boolean = false
 
+    private var mealsPerPage = 10
+    private var currentPage = 0
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,6 +59,7 @@ class TabCategoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        allMeals = listOf()
         init()
     }
 
@@ -94,7 +98,12 @@ class TabCategoryFragment : Fragment() {
                 override fun onFinish() {
                     val filter = editable.toString()
                     if (filter.isEmpty()) {
-                        mealAdapter.submitList(allMeals)
+                        if (allMeals.size > mealsPerPage) {
+                            mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
+                        }
+                        else{
+                            mealAdapter.submitList(allMeals)
+                        }
                     } else {
                         mealViewModel.getAll()
                         mealViewModel.fetchAllByCategory(filter)
@@ -108,12 +117,22 @@ class TabCategoryFragment : Fragment() {
         binding.inputName.doAfterTextChanged {
             val filter = it.toString()
             if(filter.isEmpty()){
-                mealAdapter.submitList(allMeals)
+                if (allMeals.size > mealsPerPage) {
+                    mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
+                }
+                else{
+                    mealAdapter.submitList(allMeals)
+                }
             }else{
 //                mealViewModel.getAll()
 //                mealViewModel.fetchAllByName(filter)
                 val filteredList = filterByName(allMeals, filter)
-                mealAdapter.submitList(filteredList)
+                if (filteredList.size > mealsPerPage) {
+                    mealAdapter.submitList(filteredList.subList(0,mealsPerPage))
+                }
+                else{
+                    mealAdapter.submitList(filteredList)
+                }
             }
         }
         binding.inputTag.doAfterTextChanged {editable->
@@ -129,7 +148,12 @@ class TabCategoryFragment : Fragment() {
                     val filter = editable.toString()
                     if (filter.isEmpty()) {
                         isTagSearch = false
-                        mealAdapter.submitList(allMeals)
+                        if (allMeals.size > mealsPerPage) {
+                            mealAdapter.submitList(allMeals.subList(0,mealsPerPage))
+                        }
+                        else{
+                            mealAdapter.submitList(allMeals)
+                        }
                     } else {
                         isTagSearch = true
                         mealViewModel.getAllByTag(filter)
@@ -160,9 +184,35 @@ class TabCategoryFragment : Fragment() {
         binding.sortBtn.setOnClickListener {
             var sortedMeals : List<MealEntity>
             sortedMeals = sortMealsByName(allMeals)
-            mealAdapter.submitList(sortedMeals)
+            if (sortedMeals.size > mealsPerPage) {
+                mealAdapter.submitList(sortedMeals.subList(0,mealsPerPage))
+            }
+            else{
+                mealAdapter.submitList(sortedMeals)
+            }
         }
 
+
+        //Load previous 10 meals
+        binding.filterBackwardPagination.setOnClickListener{
+            if ((currentPage-1) >= 0){
+                currentPage -= 1
+                mealAdapter.submitList(allMeals.subList(currentPage * mealsPerPage, (currentPage+1) * mealsPerPage))
+            }
+        }
+
+        //Load next 10 meals
+        binding.filterForwardPagination.setOnClickListener{
+            if ((currentPage+1) * mealsPerPage < allMeals.size){
+                currentPage += 1
+                if ((currentPage+1) * mealsPerPage < allMeals.size){
+                    mealAdapter.submitList(allMeals.subList(currentPage * mealsPerPage, (currentPage+1) * mealsPerPage))
+                }
+                else {
+                    mealAdapter.submitList(allMeals.subList(currentPage * mealsPerPage, allMeals.size))
+                }
+            }
+        }
     }
 
     private fun initObservers(){
@@ -179,7 +229,12 @@ class TabCategoryFragment : Fragment() {
                 if(!isTagSearch){
                     allMeals = state.meals
                 }
-                mealAdapter.submitList(state.meals)
+                if (state.meals.size > mealsPerPage) {
+                    mealAdapter.submitList(state.meals.subList(0,mealsPerPage))
+                }
+                else{
+                    mealAdapter.submitList(state.meals)
+                }
                 //mealAdapter.currentList.add(state.meals[0])
             }
             is MealState.Error -> {
