@@ -299,7 +299,7 @@ class MealViewModel (
 
     override fun fetchAllByIngredientForMealList(ingredient: String) {
         val subscription = mealRepository
-            .fetchAllByIngredient(ingredient)
+            .fetchAllByIngredientForMealList(ingredient)
             .startWith(Resource.Loading())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
