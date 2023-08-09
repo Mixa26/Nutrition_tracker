@@ -2,6 +2,7 @@
 
 # Introduction
 This is a University project which was meant to be an android app that helps you decide your meal plan.<br>
+Me and my colleague Milan Marinković worked on this project together. You will find his github here: https://github.com/marinZv<br>
 The app uses two API's, one for the meals: https://themealdb.com/<br>
 and the other one for fetching the calories for the meals based on their ingredients: https://api-ninjas.com/api/nutrition<br>
 The language used was Kotlin.
